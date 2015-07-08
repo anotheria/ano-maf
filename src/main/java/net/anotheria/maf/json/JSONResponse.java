@@ -1,15 +1,14 @@
 package net.anotheria.maf.json;
 
+import net.anotheria.util.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import net.anotheria.util.StringUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * JSON error response.
@@ -37,6 +36,11 @@ public class JSONResponse implements JSONErrorScope {
 	 * Commands root scope.
 	 */
 	public static final String ROOT_COMMANDS_SCOPE = "commands";
+
+	/**
+	 * Raw data root scope.
+	 */
+	public static final String ROOT_RAW_DATA_SCOPE = "rawData";
 
 	/**
 	 * Errors root scope.
@@ -122,6 +126,13 @@ public class JSONResponse implements JSONErrorScope {
 	 *            - value
 	 */
 	public void addRawData(final String key, final String value) {
+		if (StringUtils.isEmpty(key)) {
+			throw new IllegalArgumentException("Key is empty or null.");
+		}
+		if (StringUtils.isEmpty(value)) {
+			throw new IllegalArgumentException("Value is empty or null.");
+		}
+
 		rawData.put(key, value);
 	}
 
@@ -225,6 +236,11 @@ public class JSONResponse implements JSONErrorScope {
 			// prepare commands scope
 			result.put(ROOT_COMMANDS_SCOPE, getCommandsJSON());
 
+			// prepare raw data
+			if (!rawData.isEmpty()) {
+				result.put(ROOT_RAW_DATA_SCOPE, getRawDataJSON());
+			}
+
 			// prepare errors scope
 			if (hasErrors()) // showing errors section only if response have errors
 				result.put(ROOT_ERRORS_SCOPE, getErrorsJSON());
@@ -249,7 +265,22 @@ public class JSONResponse implements JSONErrorScope {
 	}
 
 	/**
-	 * Internal method for preparing commends json.
+	 * Internal method for preparing raw data json.
+	 *
+	 * @return {@link JSONObject}
+	 * @throws JSONException
+	 */
+	private JSONObject getRawDataJSON() throws JSONException {
+		JSONObject rawDataJsonObject = new JSONObject();
+
+		for (String dataName : rawData.keySet())
+			rawDataJsonObject.put(dataName, rawData.get(dataName));
+
+		return rawDataJsonObject;
+	}
+
+	/**
+	 * Internal method for preparing commands json.
 	 * 
 	 * @return {@link JSONObject}
 	 * @throws JSONException
