@@ -158,6 +158,10 @@ public class MAFFilter implements Filter, IStatsProducer {
         }
 	}
 
+	protected boolean isInterruptFilterChain() {
+		return true;
+	}
+
     private void configureByAnnotations(String annotatedActionsPackage) {
         Reflections reflections = new Reflections(annotatedActionsPackage);
         Set<Class<?>> actionTypes = new HashSet<Class<?>>();
@@ -213,14 +217,16 @@ public class MAFFilter implements Filter, IStatsProducer {
 		if (!(servletPath==null)){
 			if ((path.length()==0 || servletPath.startsWith(path)) && !isPathExcluded(servletPath)){
 				doPerform(req, res, servletPath);
-				//optionally allow the chain to run further?
-				return;
+
+				if (isInterruptFilterChain()) { //optionally allow the chain to run further?
+					return;
+				}
 			}
 		}
 
 		chain.doFilter(req, res);			
 	}
-	
+
 	/**
 	 * Decides whether the servlet path is excluded from execution by this filter.
 	 * Derived class can customize filter chain traversal procedure by
