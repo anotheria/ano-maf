@@ -20,6 +20,6 @@ public class ActionCommand {
 	}
 	
 	@Override public String toString(){
-		return "command "+getName();
+        return "command "+ name;
 	}
 }

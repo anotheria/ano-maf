@@ -18,6 +18,7 @@ import net.anotheria.util.mapper.ValueObjectMapperUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,8 +96,8 @@ public final class FormObjectMapper {
 		}
 	}
 
-    private static Map<String, String> getRequestParameterMap(HttpServletRequest req) {
-        final Map<String, String> parameterMap = new HashMap<String, String>();
+    private static Map<String, String> getRequestParameterMap(ServletRequest req) {
+        final Map<String, String> parameterMap = new HashMap<>();
 
         for (Object key : req.getParameterMap().keySet()) {
             String reqKey = String.valueOf(key);
@@ -126,17 +127,17 @@ public final class FormObjectMapper {
                                         ValueObjectMapperUtil.map(parameterMap, formBean);
 					return formBean;
 				} else if (RequestMap.class.equals(formAnnotation.annotationType())) {
-					final Map<String, Object> parameters = new HashMap<String, Object>();
+					final Map<String, Object> parameters = new HashMap<>();
 					FormObjectMapper.map(req, parameters);
 
 					final Enumeration headerNames = req.getHeaderNames();
-					final Map<String, String> headerMap = new HashMap<String, String>();
+					final Map<String, String> headerMap = new HashMap<>();
 					while (headerNames.hasMoreElements()) {
 						final String name = (String) headerNames.nextElement();
 						headerMap.put(name, req.getHeader(name));
 					}
 
-					final Map<String, String> cookieMap = new HashMap<String, String>();
+					final Map<String, String> cookieMap = new HashMap<>();
 					for (Cookie cookie : req.getCookies()) {
 						cookieMap.put(cookie.getName(), cookie.getValue());
 					}
@@ -145,14 +146,10 @@ public final class FormObjectMapper {
 				}
 
 			}
-		} catch (NoSuchMethodException e) {
-			LOGGER.error("getModelObjectMapped", e);
-		} catch (InstantiationException e) {
-			LOGGER.error("getModelObjectMapped", e);
-		} catch (IllegalAccessException e) {
+		} catch (NoSuchMethodException | IllegalAccessException | InstantiationException e) {
 			LOGGER.error("getModelObjectMapped", e);
 		}
-		return null;
+        return null;
 	}
 
 	/**
@@ -161,8 +158,8 @@ public final class FormObjectMapper {
 	 * @param req  http request
 	 * @param bean backing bean
 	 */
-	public static List<ValidationError> validate(final HttpServletRequest req, final Object bean) {
-		List<ValidationError> errors = new ArrayList<ValidationError>();
+	public static List<ValidationError> validate(final ServletRequest req, final Object bean) {
+		List<ValidationError> errors = new ArrayList<>();
 
 		final Class<?> beanClass = bean.getClass();
 		final Field[] fields = beanClass.getDeclaredFields();
@@ -198,12 +195,10 @@ public final class FormObjectMapper {
 						}
 					}
 				}
-			} catch (IllegalAccessException e) {
-				LOGGER.error("validate", e);
-			} catch (InstantiationException e) {
+			} catch (IllegalAccessException | InstantiationException e) {
 				LOGGER.error("validate", e);
 			}
-		}
+        }
 		return errors;
 	}
 }

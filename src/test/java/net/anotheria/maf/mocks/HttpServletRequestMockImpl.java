@@ -53,7 +53,6 @@ public class HttpServletRequestMockImpl extends AbstractHttpServletRequest {
 	 * Default Constructor.
 	 */
 	public HttpServletRequestMockImpl() {
-		super();
 		this.paramMap = new ConcurrentHashMap<String, String>();
 		this.attributeMap = new ConcurrentHashMap<String, Object>();
 	}
@@ -141,7 +140,7 @@ public class HttpServletRequestMockImpl extends AbstractHttpServletRequest {
 
 	public String dump() {
 		StringBuffer buffer = new StringBuffer();
-		buffer.append(this.toString());
+		buffer.append(this);
 		buffer.append("Dumping HttpServletRequestMockImpl");
 		buffer.append("Attributes :");
 		appendCollection(paramMap, buffer);

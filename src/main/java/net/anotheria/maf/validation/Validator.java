@@ -17,5 +17,5 @@ public interface Validator<T> {
 	 * @param field value to check
 	 * @return true if valid
 	 */
-	public boolean validate(T field);
+    boolean validate(T field);
 }
