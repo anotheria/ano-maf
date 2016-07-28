@@ -1,6 +1,6 @@
 package net.anotheria.maf.annotationsmapping;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import net.anotheria.maf.MAFFilter;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.ActionMappingsConfigurator;
