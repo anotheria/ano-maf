@@ -1,5 +1,6 @@
 package net.anotheria.maf;
 
+import net.anotheria.maf.action.ActionCommand;
 import net.anotheria.maf.action.ActionForward;
 import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.action.ActionMappings;
@@ -82,24 +83,24 @@ public class Mappings10StyleTest {
 		
 		assertNull(storedMappings.findMapping("nonexisting"));
 		
-		assertNotNull(storedMappings.findMapping("simple").findForward("simple"));
-		assertNull(storedMappings.findMapping("simple").findForward("not-existing"));
+		assertNotNull(storedMappings.findMapping("simple").findCommand("simple"));
+		assertNull(storedMappings.findMapping("simple").findCommand("not-existing"));
 		
 	}
 	
 	@Test public void testAlias(){
 		assertNotNull(storedMappings.findMapping("verysimple"));
-		assertNotNull(storedMappings.findMapping("simple").findForward("simple"));
-		assertNull(storedMappings.findMapping("simple").findForward("not-existing"));
+		assertNotNull(storedMappings.findMapping("simple").findCommand("simple"));
+		assertNull(storedMappings.findMapping("simple").findCommand("not-existing"));
 	}
 	
-	@Test public void testForward(){
+	@Test public void testCommand(){
 		ActionMapping mapping = storedMappings.findMapping("multi");
-		ActionForward f1 = mapping.findForward("varianta");
-		ActionForward f1_1 = mapping.findForward("varianta");
-		ActionForward f2 = mapping.findForward("variantb");
-		ActionForward f3 = mapping.findForward("variantc");
-		ActionForward f4 = mapping.findForward("not-existing");
+		ActionCommand f1 = mapping.findCommand("varianta");
+		ActionCommand f1_1 = mapping.findCommand("varianta");
+		ActionCommand f2 = mapping.findCommand("variantb");
+		ActionCommand f3 = mapping.findCommand("variantc");
+		ActionCommand f4 = mapping.findCommand("not-existing");
 		
 		assertEquals(f1, f1_1);
 		assertFalse(f1.equals(f2));

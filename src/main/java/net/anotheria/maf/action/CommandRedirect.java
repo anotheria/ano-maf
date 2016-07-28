@@ -37,7 +37,7 @@ public class CommandRedirect extends ActionCommand implements Cloneable{
 	}
 	
 	@Override public String toString(){
-		return getName()+" to "+getTarget()+" via "+getCode();
+        return getName()+" to "+ target +" via "+ code;
 	}
 
 	public String getTarget() {
@@ -68,7 +68,7 @@ public class CommandRedirect extends ActionCommand implements Cloneable{
 			ret.target += "?";
 		else
 			ret.target += "&";
-		ret.target += name+"="+value;
+		ret.target += name+ '=' +value;
 		return ret;
 	}
 	

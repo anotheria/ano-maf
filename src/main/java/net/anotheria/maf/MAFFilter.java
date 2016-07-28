@@ -46,10 +46,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * MAFFilter is the dispatcher filter of the MAF. We are using a Filter instead of Servlet to be able to inject MAF parts in huge we-map-everything-through-one-servlet systems (aka spring).
@@ -110,7 +110,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 
 	@Override public void init(FilterConfig config) throws ServletException {
 		getStats = new FilterStats("cumulated", getMonitoringIntervals());
-		cachedStatList = new ArrayList<IStats>();
+		cachedStatList = new ArrayList<>();
 		cachedStatList.add(getStats);
 		
 		path = config.getInitParameter("path");
@@ -132,7 +132,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 		ProducerRegistryFactory.getProducerRegistryInstance().registerProducer(this);
 
 		String actionFactoryClazzName = config.getInitParameter("actionFactory");
-		if (actionFactoryClazzName!=null && actionFactoryClazzName.length()>0){
+		if (actionFactoryClazzName!=null && !actionFactoryClazzName.isEmpty()){
 			try{
 				actionFactory = (ActionFactory)Class.forName(actionFactoryClazzName).newInstance();
 			}catch(Exception e){
@@ -160,7 +160,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 
     private void configureByAnnotations(String annotatedActionsPackage) {
         Reflections reflections = new Reflections(annotatedActionsPackage);
-        Set<Class<?>> actionTypes = new HashSet<Class<?>>();
+        Collection<Class<?>> actionTypes = new HashSet<>();
         actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionAnnotation.class));
         actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionsAnnotation.class));
         for(Class<?> clazz: actionTypes) {
@@ -169,7 +169,7 @@ public class MAFFilter implements Filter, IStatsProducer {
                 log.error(message);
                 throw new RuntimeException(message);
             }
-            List<ActionAnnotation> maps = new ArrayList<ActionAnnotation>();
+            Collection<ActionAnnotation> maps = new ArrayList<>();
             ActionAnnotation mapAnnotation = clazz.getAnnotation(ActionAnnotation.class);
             if (mapAnnotation != null) {
                 maps.add(mapAnnotation);
@@ -182,7 +182,7 @@ public class MAFFilter implements Filter, IStatsProducer {
                 if (!path.equals(map.context())) {
                     continue;
                 }
-                List<ActionCommand> forwards = new ArrayList<ActionCommand>();
+                List<ActionCommand> forwards = new ArrayList<>();
                 for (CommandForwardAnnotation forward: map.forwards()) {
                     forwards.add(new CommandForward(forward.name(), forward.path()));
                 }
@@ -207,11 +207,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 		HttpServletRequest req = (HttpServletRequest)sreq;
 		HttpServletResponse res = (HttpServletResponse)sres;
 		String servletPath = req.getServletPath();
-		if (servletPath==null || servletPath.length()==0)
+		if (servletPath==null || servletPath.isEmpty())
 			servletPath = req.getPathInfo();
 		
 		if (!(servletPath==null)){
-			if ((path.length()==0 || servletPath.startsWith(path)) && !isPathExcluded(servletPath)){
+			if ((path.isEmpty() || servletPath.startsWith(path)) && !isPathExcluded(servletPath)){
 				doPerform(req, res, servletPath);
 				//optionally allow the chain to run further?
 				return;
@@ -239,7 +239,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 		long startTime = System.nanoTime();
 		try{
 			String actionPath = servletPath.substring(path.length());
-			if (actionPath==null || actionPath.length()==0){
+			if (actionPath==null || actionPath.isEmpty()){
 				if (getDefaultActionName()!=null)
 					actionPath = getDefaultActionName();
 			}
@@ -314,7 +314,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 		}
 	}
 
-	private void executeCommand(ActionCommand command, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+	private void executeCommand(ActionCommand command, ServletRequest req, HttpServletResponse res) throws ServletException, IOException{
 		if (command instanceof ActionForward){
 			ActionForward forward = (ActionForward)command;
 			req.getRequestDispatcher(forward.getPath()).forward(req, res);
@@ -376,7 +376,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 	 * @return
 	 */
 	protected List<ActionMappingsConfigurator> getConfigurators(){
-		return new ArrayList<ActionMappingsConfigurator>();
+		return new ArrayList<>();
 	}
 	
 	/**

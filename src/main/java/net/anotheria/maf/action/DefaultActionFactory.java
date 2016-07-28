@@ -13,7 +13,7 @@ public final class DefaultActionFactory implements ActionFactory{
 	/**
 	 * Stored created factory instances.
 	 */
-	private static final ConcurrentMap<String, Action> instances = new ConcurrentHashMap<String, Action>();
+	private static final ConcurrentMap<String, Action> instances = new ConcurrentHashMap<>();
 	/**
 	 * Returns an instance of defined action type.
 	 * @param actionType

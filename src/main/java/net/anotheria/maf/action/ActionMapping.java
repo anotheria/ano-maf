@@ -23,7 +23,7 @@ public class ActionMapping {
 	public ActionMapping(String aPath, String aType, ActionCommand... someCommands){
 		path = aPath;
 		type = aType;
-		commands = new HashMap<String, ActionCommand>();
+		commands = new HashMap<>();
 		if (someCommands!=null)
 			for (ActionCommand c : someCommands)
 				commands.put(c.getName(), c);
@@ -72,12 +72,11 @@ public class ActionMapping {
 	}
 	
 	@Override public String toString(){
-		return getPath()+" - "+getType()+" - "+commands;
+        return path +" - "+ type +" - "+commands;
 	}
 	
 	public Map<String, ActionCommand> getCommands(){
-		HashMap<String, ActionCommand> ret = new HashMap<String, ActionCommand>();
-		ret.putAll(commands);
+		Map<String, ActionCommand> ret = new HashMap<>(commands);
 		return ret;
 	}
 }
