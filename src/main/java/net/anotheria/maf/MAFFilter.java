@@ -10,6 +10,7 @@ import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.ActionMappingsConfigurator;
 import net.anotheria.maf.action.CommandForward;
+import net.anotheria.maf.action.CommandHandled;
 import net.anotheria.maf.action.CommandRedirect;
 import net.anotheria.maf.action.DefaultActionFactory;
 import net.anotheria.maf.annotation.ActionAnnotation;
@@ -18,6 +19,9 @@ import net.anotheria.maf.annotation.CommandForwardAnnotation;
 import net.anotheria.maf.annotation.CommandRedirectAnnotation;
 import net.anotheria.maf.bean.ErrorBean;
 import net.anotheria.maf.bean.FormBean;
+import net.anotheria.maf.errorhandling.ErrorHandler;
+import net.anotheria.maf.errorhandling.ErrorHandlerFactory;
+import net.anotheria.maf.errorhandling.ErrorHandlersProcessor;
 import net.anotheria.maf.util.FormObjectMapper;
 import net.anotheria.maf.validation.ValidationAware;
 import net.anotheria.maf.validation.ValidationError;
@@ -49,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -104,6 +109,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 	 * Actionfactory instance to create and manage action objects.
 	 */
 	private ActionFactory actionFactory = new DefaultActionFactory();
+
+	/**
+	 * {@link ErrorHandlerFactory} instance to create and manage {@link net.anotheria.maf.errorhandling.ErrorHandler} objects.
+	 */
+	private ErrorHandlerFactory errorHandlerFactory = new ErrorHandlerFactory();
 	
 	@Override
 	public void destroy() {
@@ -280,16 +290,22 @@ public class MAFFilter implements Filter, IStatsProducer {
 				throw new ServletException("Error in processing: "+e.getMessage(), e);
 			}catch(AbortExecutionException e){
 				//do nothing
-			}catch(Exception e){
-				log.error("Unexpected exception in processing", e);
-				ActionCommand onError = mappings.getOnError();
-				if (onError==null){
-					throw new ServletException("Error in processing: "+e.getMessage(), e);
-				}else{
-					req.setAttribute(ErrorBean.NAME, new ErrorBean(e));
-					executeCommand(onError, req, res);
+			} catch(Throwable e){
+                final List<Class<? extends ErrorHandler>> errorHandlers = mappings.getErrorHandlers(e.getClass());
+                if (!errorHandlers.isEmpty()) {
+					command = new ErrorHandlersProcessor(errorHandlerFactory, e, action, mapping, req, res).process(errorHandlers);
 				}
 
+				if (command == null ) {
+					log.error("Unhandled exception in action processing", e);
+					ActionCommand onError = mappings.getOnError();
+					if (onError == null) {
+						throw new ServletException("Error in processing: " + e.getMessage(), e);
+					} else {
+						req.setAttribute(ErrorBean.NAME, new ErrorBean(e));
+						executeCommand(onError, req, res);
+					}
+				}
 			}
 			
 			if (command!=null){
@@ -317,6 +333,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 	}
 
 	private void executeCommand(ActionCommand command, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+		if (command instanceof CommandHandled) {
+			// nothing to do
+			return;
+		}
+
 		if (command instanceof ActionForward){
 			ActionForward forward = (ActionForward)command;
 			req.getRequestDispatcher(forward.getPath()).forward(req, res);

@@ -1,11 +1,15 @@
  package net.anotheria.maf.action;
 
+import net.anotheria.maf.builtin.ShowMappingsAction;
+import net.anotheria.maf.errorhandling.ErrorHandler;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import net.anotheria.maf.builtin.ShowMappingsAction;
 
 /**
  * Configuration of the Framework. This class contains all mappings the framework will react on.
@@ -22,6 +26,11 @@ public final class ActionMappings {
 	 * Action mappings.
 	 */
 	private final ConcurrentMap<String, ActionMapping> mappings = new ConcurrentHashMap<String, ActionMapping>();
+
+	/**
+	 * Error handlers mappings: {@link Throwable} to the list of {@link ErrorHandler}.
+	 */
+	private final ConcurrentMap<Class<? extends Throwable>, List<Class<? extends ErrorHandler>>> errorHandlers = new ConcurrentHashMap<>();
 
 	/**
 	 * This command will be executed if an error happens during the command execution.  We recommend to use a CommandForward. You can access original error under the name maf.error in the request.
@@ -105,7 +114,23 @@ public final class ActionMappings {
 		ret.putAll(mappings);
 		return ret;
 	}
-	
+
+	/**
+	 * Allows to specify the error handler type for the given error type.
+	 *
+	 * @param error        the class of error
+	 * @param errorHandler the class of error handler
+	 */
+	public synchronized void addErrorHandler(final Class<? extends Throwable> error, final Class<? extends ErrorHandler> errorHandler) {
+		List<Class<? extends ErrorHandler>> handlers = this.errorHandlers.get(error);
+		if (handlers == null) {
+			handlers = new ArrayList<>();
+		}
+
+		handlers.add(errorHandler);
+		this.errorHandlers.put(error, handlers);
+	}
+
 	public ActionMappings(){
 		addAlias("maf/showMappings", "/maf/showMappings");
 		addMapping("/maf/showMappings", ShowMappingsAction.class);
@@ -126,5 +151,18 @@ public final class ActionMappings {
 		this.onNotFound = onNotFound;
 	}
 
+	/**
+	 * Returns the list of error handler types which can handle the given error type.
+	 *
+	 * @param errorClazz the type of error
+	 * @return the list of error handler types or empty if handlers were not found
+	 */
+	public List<Class<? extends ErrorHandler>> getErrorHandlers(Class<? extends Throwable> errorClazz) {
+		final List<Class<? extends ErrorHandler>> handlers = errorHandlers.get(errorClazz);
+		if (handlers == null) {
+			return Collections.emptyList();
+		}
 
+		return new ArrayList<>(handlers);
+	}
 }
