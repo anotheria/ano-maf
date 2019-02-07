@@ -1,4 +1,4 @@
-package net.anotheria.maf;
+package net.anotheria.maf.errorhandling;
 
 import net.anotheria.maf.action.Action;
 import net.anotheria.maf.action.ActionCommand;

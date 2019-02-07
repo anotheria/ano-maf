@@ -17,6 +17,7 @@ import net.anotheria.maf.annotation.ActionAnnotation;
 import net.anotheria.maf.annotation.ActionsAnnotation;
 import net.anotheria.maf.annotation.CommandForwardAnnotation;
 import net.anotheria.maf.annotation.CommandRedirectAnnotation;
+import net.anotheria.maf.annotation.ErrorHandlerAnnotation;
 import net.anotheria.maf.bean.ErrorBean;
 import net.anotheria.maf.bean.FormBean;
 import net.anotheria.maf.errorhandling.ErrorHandler;
@@ -53,7 +54,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -166,45 +166,79 @@ public class MAFFilter implements Filter, IStatsProducer {
         // Configure by annotations
         String annotatedActionsPackage = config.getInitParameter("configureByAnnotations");
         if (!StringUtils.isEmpty(annotatedActionsPackage)) {
-            configureByAnnotations(annotatedActionsPackage);
+			configureActionsByAnnotations(annotatedActionsPackage);
+			configureErrorHandlersByAnnotations(annotatedActionsPackage);
         }
 	}
 
-    private void configureByAnnotations(String annotatedActionsPackage) {
-        Reflections reflections = new Reflections(annotatedActionsPackage);
-        Set<Class<?>> actionTypes = new HashSet<Class<?>>();
-        actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionAnnotation.class));
-        actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionsAnnotation.class));
-        for(Class<?> clazz: actionTypes) {
-            if (!Action.class.isAssignableFrom(clazz)) {
-                String message = "Class " + clazz.getName() + " annotated with " + ActionAnnotation.class.getName() + " or " + ActionsAnnotation.class.getName() + " is not inherited from " + Action.class.getName();
-                log.error(message);
-                throw new RuntimeException(message);
-            }
-            List<ActionAnnotation> maps = new ArrayList<ActionAnnotation>();
-            ActionAnnotation mapAnnotation = clazz.getAnnotation(ActionAnnotation.class);
-            if (mapAnnotation != null) {
-                maps.add(mapAnnotation);
-            }
-            ActionsAnnotation mapsAnnotation = clazz.getAnnotation(ActionsAnnotation.class);
-            if (mapsAnnotation != null) {
-                Collections.addAll(maps, mapsAnnotation.maps());
-            }
-            for (ActionAnnotation map: maps) {
-                if (!path.equals(map.context())) {
-                    continue;
-                }
-                List<ActionCommand> forwards = new ArrayList<ActionCommand>();
-                for (CommandForwardAnnotation forward: map.forwards()) {
-                    forwards.add(new CommandForward(forward.name(), forward.path()));
-                }
-                for (CommandRedirectAnnotation redirect: map.redirects()) {
-                    forwards.add(new CommandRedirect(redirect.name(), redirect.target(), redirect.code()));
-                }
-                mappings.addMapping(map.path(), (Class<Action>)clazz, forwards.toArray(new ActionCommand[forwards.size()]));
-            }
-        }
-    }
+	/**
+	 * Allows to configure actions via annotations.
+	 *
+	 * @param annotatedClassesPackage the package which contains annotated classes
+	 */
+	private void configureActionsByAnnotations(String annotatedClassesPackage) {
+		Reflections reflections = new Reflections(annotatedClassesPackage);
+
+		Set<Class<?>> actionTypes = new HashSet<Class<?>>();
+		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionAnnotation.class));
+		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionsAnnotation.class));
+		for(Class<?> clazz: actionTypes) {
+			if (!Action.class.isAssignableFrom(clazz)) {
+				String message = "Class " + clazz.getName() + " annotated with " + ActionAnnotation.class.getName() + " or " + ActionsAnnotation.class.getName() + " is not inherited from " + Action.class.getName();
+				log.error(message);
+				throw new RuntimeException(message);
+			}
+			List<ActionAnnotation> maps = new ArrayList<ActionAnnotation>();
+			ActionAnnotation mapAnnotation = clazz.getAnnotation(ActionAnnotation.class);
+			if (mapAnnotation != null) {
+				maps.add(mapAnnotation);
+			}
+			ActionsAnnotation mapsAnnotation = clazz.getAnnotation(ActionsAnnotation.class);
+			if (mapsAnnotation != null) {
+				Collections.addAll(maps, mapsAnnotation.maps());
+			}
+			for (ActionAnnotation map: maps) {
+				if (!path.equals(map.context())) {
+					continue;
+				}
+				List<ActionCommand> forwards = new ArrayList<ActionCommand>();
+				for (CommandForwardAnnotation forward: map.forwards()) {
+					forwards.add(new CommandForward(forward.name(), forward.path()));
+				}
+				for (CommandRedirectAnnotation redirect: map.redirects()) {
+					forwards.add(new CommandRedirect(redirect.name(), redirect.target(), redirect.code()));
+				}
+				mappings.addMapping(map.path(), (Class<Action>)clazz, forwards.toArray(new ActionCommand[forwards.size()]));
+			}
+		}
+	}
+
+	/**
+	 * Allows to configure error handlers via annotations.
+	 *
+	 * @param annotatedClassesPackage the package which contains annotated classes
+	 */
+	private void configureErrorHandlersByAnnotations(final String annotatedClassesPackage) {
+		final Reflections reflections = new Reflections(annotatedClassesPackage);
+		final Set<Class<?>> errorHandlerTypes = new HashSet<>(reflections.getTypesAnnotatedWith(ErrorHandlerAnnotation.class));
+
+		for (Class<?> errorHandlerClazz : errorHandlerTypes) {
+			if (!ErrorHandler.class.isAssignableFrom(errorHandlerClazz)) {
+				final String message = String.format(
+						"Class %s annotated with %s is not inherited from %s",
+						errorHandlerClazz.getName(), ErrorHandlerAnnotation.class.getName(), ErrorHandler.class.getName()
+				);
+
+				log.error(message);
+				throw new RuntimeException(message);
+			}
+
+			final ErrorHandlerAnnotation annotation = errorHandlerClazz.getAnnotation(ErrorHandlerAnnotation.class);
+			final Class<? extends Throwable> exceptionClazz = annotation.exception();
+
+			mappings.addErrorHandler(exceptionClazz, (Class<? extends ErrorHandler>) errorHandlerClazz);
+		}
+	}
 
 	@Override public void doFilter(ServletRequest sreq, ServletResponse sres, FilterChain chain) throws IOException, ServletException {
 		if (!(sreq instanceof HttpServletRequest)){

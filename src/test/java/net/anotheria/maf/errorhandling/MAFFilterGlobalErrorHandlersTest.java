@@ -1,5 +1,6 @@
-package net.anotheria.maf;
+package net.anotheria.maf.errorhandling;
 
+import net.anotheria.maf.MAFFilter;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.ActionMappingsConfigurator;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
@@ -25,9 +26,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Test error handlers implementation in context of {@link MAFFilter}.
+ * Test global error handlers via action mappings implementation in context of {@link MAFFilter}.
  */
-public class MAFFilterErrorHandlersTest {
+public class MAFFilterGlobalErrorHandlersTest {
 	private static final String CONTEXT_PATH = "/";
 	private static final String SERVER_NAME = "localhost";
 
@@ -45,8 +46,8 @@ public class MAFFilterErrorHandlersTest {
 				configurators.add(new ActionMappingsConfigurator() {
 					@Override
 					public void configureActionMappings(ActionMappings mappings) {
-						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.TestActionWithRuntimeException");
-						mappings.addMapping("testActionWithAssertionError", "net.anotheria.maf.TestActionWithAssertionError");
+						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.errorhandling.TestActionWithRuntimeException");
+						mappings.addMapping("testActionWithAssertionError", "net.anotheria.maf.errorhandling.TestActionWithAssertionError");
 						mappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 						mappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
 					}
