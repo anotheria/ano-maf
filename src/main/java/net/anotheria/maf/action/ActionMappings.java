@@ -33,15 +33,11 @@ public final class ActionMappings {
 	private final ConcurrentMap<Class<? extends Throwable>, List<Class<? extends ErrorHandler>>> errorHandlers = new ConcurrentHashMap<>();
 
 	/**
-	 * This command will be executed if an error happens during the command execution.  We recommend to use a CommandForward. You can access original error under the name maf.error in the request.
+	 * Default error handler.
+	 * It will be executed in case if error has not been handled by either the action's error handler or by the global error handlers.
 	 */
-	private ActionCommand onError;
+	private Class<? extends ErrorHandler> defaultErrorHandler;
 
-	/**
-	 * This command is executed if a not found action has been requested. We recommend to use a CommandRedirect.
-	 */
-	private ActionCommand onNotFound;
-	
 	/**
 	 * Adds a mapping.
 	 * @param path path to which given ActionCommand(s) are mapped.
@@ -54,6 +50,18 @@ public final class ActionMappings {
 
 	/**
 	 * Adds a mapping.
+	 *
+	 * @param path         path to which given ActionCommand(s) are mapped
+	 * @param type         type of ActionMapping created
+	 * @param errorHandler the {@link ErrorHandler} class associated with current action
+	 * @param commands     var-arg array of ActionCommands to map to given path
+	 */
+	public void addMapping(String path, String type, Class<? extends ErrorHandler> errorHandler, ActionCommand... commands) {
+		mappings.put(path, new ActionMapping(path, type, errorHandler, commands));
+	}
+
+	/**
+	 * Adds a mapping.
 	 * @param path path to which given ActionForward(s) are mapped.
 	 * @param type type of ActionMapping created.
 	 * @param forwards var-arg array of ActionForwards to map to given path.
@@ -61,7 +69,7 @@ public final class ActionMappings {
 	public void addMapping(String path, String type, ActionForward... forwards){
 		mappings.put(path, new ActionMapping(path, type, forwards));
 	}
-	
+
 	public void addForward(String actionPath, String forwardPath){
 		addMapping(actionPath, ForwardAction.class, new ActionForward("forward", forwardPath));
 	}
@@ -74,6 +82,18 @@ public final class ActionMappings {
 	 */
 	public void addMapping(String path, Class<? extends Action> type, ActionCommand... commands){
 		mappings.put(path, new ActionMapping(path, type.getName(), commands));
+	}
+
+	/**
+	 * Adds a mapping.
+	 *
+	 * @param path         path to which given ActionCommand(s) are mapped
+	 * @param type         type of ActionMapping created
+	 * @param errorHandler the {@link ErrorHandler} class associated with current action
+	 * @param commands     var-arg array of ActionCommands to map to given path
+	 */
+	public void addMapping(String path, Class<? extends Action> type, Class<? extends ErrorHandler> errorHandler, ActionCommand... commands) {
+		mappings.put(path, new ActionMapping(path, type.getName(), errorHandler, commands));
 	}
 
 	/**
@@ -135,20 +155,13 @@ public final class ActionMappings {
 		addAlias("maf/showMappings", "/maf/showMappings");
 		addMapping("/maf/showMappings", ShowMappingsAction.class);
 	}
-	public ActionCommand getOnError() {
-		return onError;
+
+	public void setDefaultErrorHandler(Class<? extends ErrorHandler> defaultErrorHandler) {
+		this.defaultErrorHandler = defaultErrorHandler;
 	}
 
-	public void setOnError(ActionCommand onError) {
-		this.onError = onError;
-	}
-
-	public ActionCommand getOnNotFound() {
-		return onNotFound;
-	}
-
-	public void setOnNotFound(ActionCommand onNotFound) {
-		this.onNotFound = onNotFound;
+	public Class<? extends ErrorHandler> getDefaultErrorHandler() {
+		return defaultErrorHandler;
 	}
 
 	/**

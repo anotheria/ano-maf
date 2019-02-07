@@ -3,10 +3,13 @@ package net.anotheria.maf.errorhandling;
 import net.anotheria.maf.action.ActionCommand;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.CommandHandled;
+import net.anotheria.maf.action.NoOperationCommand;
+import net.anotheria.maf.errorhandling.handlers.NullPointerExceptionHandler;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerCommandHandled;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNull;
+import net.anotheria.maf.errorhandling.handlers.ThrowsExceptionErrorHandler;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +67,7 @@ public class ErrorHandlersProcessorTest {
 		Assert.assertTrue(command instanceof CommandHandled);
 	}
 
+
 	@Test
 	public void handlerReturnsNoOperationCommand() {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
@@ -71,11 +75,21 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof CommandHandled);
+		Assert.assertTrue(command instanceof NoOperationCommand);
 	}
 
 	@Test
-	public void processChainOfHandlers() {
+	public void handlerThrowsNotExpectedException() {
+		actionMappings.addErrorHandler(RuntimeException.class, ThrowsExceptionErrorHandler.class);
+
+		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
+		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+
+		Assert.assertTrue(command instanceof NoOperationCommand);
+	}
+
+	@Test
+	public void processListOfHandlers() {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerCommandHandled.class);
@@ -94,7 +108,7 @@ public class ErrorHandlersProcessorTest {
 	}
 
 	@Test
-	public void processChainOfHandlers_2() {
+	public void processListOfHandlers_2() {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerCommandHandled.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
@@ -112,7 +126,7 @@ public class ErrorHandlersProcessorTest {
 	}
 
 	@Test
-	public void processChainOfHandlers_3() {
+	public void processListOfHandlers_3() {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerCommandHandled.class);
@@ -130,7 +144,7 @@ public class ErrorHandlersProcessorTest {
 	}
 
 	@Test
-	public void processChainOfHandlers_4() {
+	public void processListOfHandlers_4() {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerCommandHandled.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);

@@ -13,13 +13,14 @@ import net.anotheria.maf.action.CommandForward;
 import net.anotheria.maf.action.CommandHandled;
 import net.anotheria.maf.action.CommandRedirect;
 import net.anotheria.maf.action.DefaultActionFactory;
+import net.anotheria.maf.action.NoOperationCommand;
 import net.anotheria.maf.annotation.ActionAnnotation;
 import net.anotheria.maf.annotation.ActionsAnnotation;
 import net.anotheria.maf.annotation.CommandForwardAnnotation;
 import net.anotheria.maf.annotation.CommandRedirectAnnotation;
 import net.anotheria.maf.annotation.ErrorHandlerAnnotation;
-import net.anotheria.maf.bean.ErrorBean;
 import net.anotheria.maf.bean.FormBean;
+import net.anotheria.maf.errorhandling.DefaultErrorHandler;
 import net.anotheria.maf.errorhandling.ErrorHandler;
 import net.anotheria.maf.errorhandling.ErrorHandlerFactory;
 import net.anotheria.maf.errorhandling.ErrorHandlersProcessor;
@@ -169,6 +170,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 			configureActionsByAnnotations(annotatedActionsPackage);
 			configureErrorHandlersByAnnotations(annotatedActionsPackage);
         }
+
+        // set default error handler
+		if (mappings.getDefaultErrorHandler() == null) {
+			mappings.setDefaultErrorHandler(DefaultErrorHandler.class);
+		}
 	}
 
 	/**
@@ -320,26 +326,12 @@ public class MAFFilter implements Filter, IStatsProducer {
 					command = action.execute(mapping, bean, req, res);
 
 				action.postProcess(mapping, req, res);
-			}catch(ValidationException e){
+			} catch(ValidationException e){
 				throw new ServletException("Error in processing: "+e.getMessage(), e);
-			}catch(AbortExecutionException e){
+			} catch(AbortExecutionException e){
 				//do nothing
-			} catch(Throwable e){
-                final List<Class<? extends ErrorHandler>> errorHandlers = mappings.getErrorHandlers(e.getClass());
-                if (!errorHandlers.isEmpty()) {
-					command = new ErrorHandlersProcessor(errorHandlerFactory, e, action, mapping, req, res).process(errorHandlers);
-				}
-
-				if (command == null ) {
-					log.error("Unhandled exception in action processing", e);
-					ActionCommand onError = mappings.getOnError();
-					if (onError == null) {
-						throw new ServletException("Error in processing: " + e.getMessage(), e);
-					} else {
-						req.setAttribute(ErrorBean.NAME, new ErrorBean(e));
-						executeCommand(onError, req, res);
-					}
-				}
+			} catch(Throwable t){
+				command = handleError(t, req, res, mapping, action);
 			}
 			
 			if (command!=null){
@@ -364,6 +356,29 @@ public class MAFFilter implements Filter, IStatsProducer {
 			getStats.addExecutionTime(executionTime);
 			getStats.notifyRequestFinished();
 		}
+	}
+
+	private ActionCommand handleError(Throwable error, HttpServletRequest req, HttpServletResponse res, ActionMapping mapping, Action action) throws ServletException, IOException {
+		ActionCommand result = null;
+
+		// action error handler
+		final Class<? extends ErrorHandler> actionErrorHandler = mapping.getErrorHandler();
+		if (actionErrorHandler != null) {
+			result = new ErrorHandlersProcessor(errorHandlerFactory, error, action, mapping, req, res).process(actionErrorHandler);
+		}
+
+		// global error handlers
+		if ((result == null || result instanceof NoOperationCommand) && !mappings.getErrorHandlers(error.getClass()).isEmpty()) {
+			final List<Class<? extends ErrorHandler>> errorHandlers = mappings.getErrorHandlers(error.getClass());
+			result = new ErrorHandlersProcessor(errorHandlerFactory, error, action, mapping, req, res).process(errorHandlers);
+		}
+
+		// default error handler in case if error wasn't handled above
+		if ((result == null || result instanceof NoOperationCommand)) {
+			result = errorHandlerFactory.getInstance(mappings.getDefaultErrorHandler()).handleError(error, action, mapping, req, res);
+		}
+
+		return result;
 	}
 
 	private void executeCommand(ActionCommand command, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{

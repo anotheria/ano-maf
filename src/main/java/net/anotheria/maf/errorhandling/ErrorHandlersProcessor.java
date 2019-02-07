@@ -86,37 +86,51 @@ public class ErrorHandlersProcessor {
 
 	/**
 	 * Allows to process the given list of {@link ErrorHandler}.
-	 * If one of handlers returns something else then a NoOperationCommand the error is considered handled.
-	 * If error handler returns {@code null} it will be considered as {@link CommandHandled}.
+	 * The first non {@link NoOperationCommand} will be considered as handled.
 	 *
-	 * @param handlersClasses the list of {@link ErrorHandler} to be processed
-	 * @return {@link ActionCommand} or {@code null} if {@link Throwable} was thrown during error handlers processing
+	 * @param handlersClasses the list of {@link ErrorHandler} classes to be processed
+	 * @return {@link ActionCommand}
 	 */
 	public ActionCommand process(final List<Class<? extends ErrorHandler>> handlersClasses) {
-		try {
-			for (Class<? extends ErrorHandler> handlerClazz : handlersClasses) {
-				final ErrorHandler handler = errorHandlerFactory.getInstance(handlerClazz);
-				final ActionCommand actionCommand = handler.handleError(error, action, mapping, request, response);
+		for (Class<? extends ErrorHandler> handlerClazz : handlersClasses) {
+			final ActionCommand actionCommand = process(handlerClazz);
 
-				if (debug) {
-					getExecutedErrorsHandlers().add(handlerClazz.getName());
-				}
-
-				if (actionCommand == null) {
-					return new CommandHandled();
-				}
-
-				if (actionCommand instanceof NoOperationCommand) {
-					continue;
-				}
-
-				return actionCommand;
+			if (actionCommand instanceof NoOperationCommand) {
+				continue;
 			}
 
-			return new CommandHandled();
+			return actionCommand;
+		}
+
+		return new NoOperationCommand();
+	}
+
+	/**
+	 * Process single error handler.
+	 * If error handler returns {@code null} it will be considered as {@link CommandHandled}.
+	 * If one of handlers returns something else then a NoOperationCommand the error is considered handled.
+	 * {@link NoOperationCommand} will be returned too in case if unexpected exception was thrown during handler processing.
+	 *
+	 * @param handlerClazz the {@link ErrorHandler} class to be processed
+	 * @return {@link ActionCommand}
+	 */
+	public ActionCommand process(final Class<? extends ErrorHandler> handlerClazz) {
+		try {
+			final ErrorHandler handler = errorHandlerFactory.getInstance(handlerClazz);
+			final ActionCommand actionCommand = handler.handleError(error, action, mapping, request, response);
+
+			if (debug) {
+				getExecutedErrorsHandlers().add(handlerClazz.getName());
+			}
+
+			if (actionCommand == null) {
+				return new CommandHandled();
+			}
+
+			return actionCommand;
 		} catch (Throwable t) {
-			LOGGER.error("Unexpected Throwable error during error handlers processing", t);
-			return null;
+			LOGGER.warn(String.format("Unexpected error during %s processing", handlerClazz.getName()), t);
+			return new NoOperationCommand();
 		}
 	}
 
