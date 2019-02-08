@@ -35,7 +35,7 @@ public class AnnotationGlobalErrorHandlerTest {
 				configurators.add(new ActionMappingsConfigurator() {
 					@Override
 					public void configureActionMappings(ActionMappings mappings) {
-						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.errorhandling.TestActionWithRuntimeException");
+						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.errorhandling.ActionWithRuntimeException");
 
 						filterActionMappings = mappings;
 					}
@@ -76,7 +76,7 @@ public class AnnotationGlobalErrorHandlerTest {
 	public void shouldMappingsContainAnnotatedErrorHandler() {
 		Assert.assertNotNull(filterActionMappings);
 
-		final List<Class<? extends ErrorHandler>> errorHandlers = filterActionMappings.getErrorHandlers(RuntimeException.class);
+		final List<Class<? extends ErrorHandler>> errorHandlers = filterActionMappings.getGlobalErrorHandlers(RuntimeException.class);
 		Assert.assertEquals(1, errorHandlers.size());
 		Assert.assertSame(GlobalRuntimeExceptionHandler.class, errorHandlers.get(0));
 	}

@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * {@link Action} implementation, which throws {@link RuntimeException} during execution.
+ * {@link Action} implementation, which throws {@link NullPointerException} during execution.
  */
-public class TestActionWithRuntimeException implements Action {
+public class ActionWithNullPointerException implements Action {
 	@Override
 	public void preProcess(ActionMapping mapping, HttpServletRequest req, HttpServletResponse res) throws Exception {
 
@@ -19,7 +19,7 @@ public class TestActionWithRuntimeException implements Action {
 
 	@Override
 	public ActionCommand execute(ActionMapping mapping, FormBean formBean, HttpServletRequest req, HttpServletResponse res) throws Exception {
-		throw new RuntimeException();
+		throw new NullPointerException();
 	}
 
 	@Override

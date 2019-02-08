@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The annotation to mark the class which implements {@link ErrorHandlerAnnotation} as global handler of the exception
- * specified in {@link #exception()} which can be thrown in actions.
+ * The annotation to mark the class which implements {@link net.anotheria.maf.errorhandling.ErrorHandler}
+ * as global handler of the exception specified in {@link #exception()} which can be thrown in actions.
  *
  * @author Illya Bogatyrchuk
  */

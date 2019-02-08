@@ -15,6 +15,8 @@ import net.anotheria.maf.action.CommandRedirect;
 import net.anotheria.maf.action.DefaultActionFactory;
 import net.anotheria.maf.action.NoOperationCommand;
 import net.anotheria.maf.annotation.ActionAnnotation;
+import net.anotheria.maf.annotation.ActionErrorHandler;
+import net.anotheria.maf.annotation.ActionErrorHandlers;
 import net.anotheria.maf.annotation.ActionsAnnotation;
 import net.anotheria.maf.annotation.CommandForwardAnnotation;
 import net.anotheria.maf.annotation.CommandRedirectAnnotation;
@@ -165,10 +167,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 		}
 
         // Configure by annotations
-        String annotatedActionsPackage = config.getInitParameter("configureByAnnotations");
-        if (!StringUtils.isEmpty(annotatedActionsPackage)) {
-			configureActionsByAnnotations(annotatedActionsPackage);
-			configureErrorHandlersByAnnotations(annotatedActionsPackage);
+        String annotatedClasesPackage = config.getInitParameter("configureByAnnotations");
+        if (!StringUtils.isEmpty(annotatedClasesPackage)) {
+			configureActionsByAnnotations(annotatedClasesPackage);
+			configureActionsErrorHandlersByAnnotations(annotatedClasesPackage);
+			configureGlobalErrorHandlersByAnnotations(annotatedClasesPackage);
         }
 
         // set default error handler
@@ -190,7 +193,8 @@ public class MAFFilter implements Filter, IStatsProducer {
 		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionsAnnotation.class));
 		for(Class<?> clazz: actionTypes) {
 			if (!Action.class.isAssignableFrom(clazz)) {
-				String message = "Class " + clazz.getName() + " annotated with " + ActionAnnotation.class.getName() + " or " + ActionsAnnotation.class.getName() + " is not inherited from " + Action.class.getName();
+				String message = String.format("Class %s annotated with %s or %s is not inherited from %s",
+						clazz.getName(), ActionAnnotation.class.getName(), ActionsAnnotation.class.getName(), Action.class.getName());
 				log.error(message);
 				throw new RuntimeException(message);
 			}
@@ -220,11 +224,52 @@ public class MAFFilter implements Filter, IStatsProducer {
 	}
 
 	/**
-	 * Allows to configure error handlers via annotations.
+	 * Allows to configure action error handlers via annotations.
 	 *
 	 * @param annotatedClassesPackage the package which contains annotated classes
 	 */
-	private void configureErrorHandlersByAnnotations(final String annotatedClassesPackage) {
+	private void configureActionsErrorHandlersByAnnotations(String annotatedClassesPackage) {
+		final Reflections reflections = new Reflections(annotatedClassesPackage);
+
+		final Set<Class<?>> actionTypes = new HashSet<Class<?>>();
+		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionErrorHandlers.class));
+		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionErrorHandler.class));
+
+		for(Class<?> clazz: actionTypes) {
+			if (!Action.class.isAssignableFrom(clazz)) {
+				final String message = String.format("Class %s annotated with %sor %s is not inherited from %s",
+						clazz.getName(), ActionErrorHandler.class.getName(), ActionErrorHandlers.class.getName(), Action.class.getName());
+				log.error(message);
+				throw new RuntimeException(message);
+			}
+
+			final List<ActionErrorHandler> actionErrorHandlerAnnotations = new ArrayList<>();
+
+			final ActionErrorHandler actionErrorHandlerAnnotation = clazz.getAnnotation(ActionErrorHandler.class);
+			if (actionErrorHandlerAnnotation != null) {
+				actionErrorHandlerAnnotations.add(actionErrorHandlerAnnotation);
+			}
+
+			final ActionErrorHandlers actionErrorHandlersAnnotation = clazz.getAnnotation(ActionErrorHandlers.class);
+			if (actionErrorHandlersAnnotation != null) {
+				Collections.addAll(actionErrorHandlerAnnotations, actionErrorHandlersAnnotation.value());
+			}
+
+			for (ActionErrorHandler handlerAnnotation : actionErrorHandlerAnnotations) {
+				final Class<? extends Throwable> exception = handlerAnnotation.exception();
+				final Class<? extends ErrorHandler> handler = handlerAnnotation.handler();
+
+				mappings.addActionErrorHandler(clazz.getName(), exception, handler);
+			}
+		}
+	}
+
+	/**
+	 * Allows to configure global error handlers via annotations.
+	 *
+	 * @param annotatedClassesPackage the package which contains annotated classes
+	 */
+	private void configureGlobalErrorHandlersByAnnotations(final String annotatedClassesPackage) {
 		final Reflections reflections = new Reflections(annotatedClassesPackage);
 		final Set<Class<?>> errorHandlerTypes = new HashSet<>(reflections.getTypesAnnotatedWith(ErrorHandlerAnnotation.class));
 
@@ -361,15 +406,15 @@ public class MAFFilter implements Filter, IStatsProducer {
 	private ActionCommand handleError(Throwable error, HttpServletRequest req, HttpServletResponse res, ActionMapping mapping, Action action) throws ServletException, IOException {
 		ActionCommand result = null;
 
-		// action error handler
-		final Class<? extends ErrorHandler> actionErrorHandler = mapping.getErrorHandler();
-		if (actionErrorHandler != null) {
-			result = new ErrorHandlersProcessor(errorHandlerFactory, error, action, mapping, req, res).process(actionErrorHandler);
+		// action error handlers
+		final List<Class<? extends ErrorHandler>> actionErrorHandlers = mappings.getActionErrorHandler(mapping.getType(), error.getClass());
+		if (!actionErrorHandlers.isEmpty()) {
+			result = new ErrorHandlersProcessor(errorHandlerFactory, error, action, mapping, req, res).process(actionErrorHandlers);
 		}
 
 		// global error handlers
-		if ((result == null || result instanceof NoOperationCommand) && !mappings.getErrorHandlers(error.getClass()).isEmpty()) {
-			final List<Class<? extends ErrorHandler>> errorHandlers = mappings.getErrorHandlers(error.getClass());
+		if ((result == null || result instanceof NoOperationCommand) && !mappings.getGlobalErrorHandlers(error.getClass()).isEmpty()) {
+			final List<Class<? extends ErrorHandler>> errorHandlers = mappings.getGlobalErrorHandlers(error.getClass());
 			result = new ErrorHandlersProcessor(errorHandlerFactory, error, action, mapping, req, res).process(errorHandlers);
 		}
 

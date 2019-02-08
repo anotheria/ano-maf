@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Test global error handlers via action mappings implementation in context of {@link MAFFilter}.
+ * Test error handlers via action mappings implementation in context of {@link MAFFilter}.
  */
-public class MAFFilterGlobalErrorHandlersTest {
+public class MAFFilterActionMappingsErrorHandlersTest {
 	private static final String CONTEXT_PATH = "/";
 	private static final String SERVER_NAME = "localhost";
 
@@ -48,15 +48,15 @@ public class MAFFilterGlobalErrorHandlersTest {
 					@Override
 					public void configureActionMappings(ActionMappings mappings) {
 						// action without error handler
-						mappings.addMapping("testActionWithAssertionError", "net.anotheria.maf.errorhandling.TestActionWithAssertionError");
+						mappings.addMapping("testActionWithAssertionError", "net.anotheria.maf.errorhandling.ActionWithAssertionError");
 
 						// action with two global error handlers
-						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.errorhandling.TestActionWithRuntimeException");
+						mappings.addMapping("testActionWithRuntimeException", "net.anotheria.maf.errorhandling.ActionWithRuntimeException");
 						mappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 						mappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
 
 						// action with error handler
-						mappings.addMapping("testActionWithNullPointerException", TestActionWithNullPointerException.class, NullPointerExceptionHandler.class);
+						mappings.addMapping("testActionWithNullPointerException", ActionWithNullPointerException.class, NullPointerException.class, NullPointerExceptionHandler.class);
 					}
 				});
 

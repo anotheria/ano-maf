@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * {@link Action} implementation, which throws {@link AssertionError} during execution.
  */
-public class TestActionWithAssertionError implements Action {
+public class ActionWithAssertionError implements Action {
 	@Override
 	public void preProcess(ActionMapping mapping, HttpServletRequest req, HttpServletResponse res) throws Exception {
 

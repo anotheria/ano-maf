@@ -1,7 +1,5 @@
 package net.anotheria.maf.action;
 
-import net.anotheria.maf.errorhandling.ErrorHandler;
-
 import java.util.HashMap;
 import java.util.Map;
 /**
@@ -23,11 +21,6 @@ public class ActionMapping {
 	private Map<String, ActionCommand> commands;
 
 	/**
-	 * The class of {@link ErrorHandler} implementation.
-	 */
-	private Class<? extends ErrorHandler> errorHandler;
-
-	/**
 	 * Creates new ActionMapping.
 	 * @param aPath path of this ActionMapping.
 	 * @param aType type of action that will handle this mapping.
@@ -41,19 +34,6 @@ public class ActionMapping {
 			for (ActionCommand c : someCommands)
 				commands.put(c.getName(), c);
 		
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param aPath        path of this ActionMapping
-	 * @param aType        type of action that will handle this mapping
-	 * @param errorHandler the {@link ErrorHandler} class associated with current action
-	 * @param someCommands var-arg array of ActionCommands bound to this ActionMapping.
-	 */
-	public ActionMapping(String aPath, String aType, Class<? extends ErrorHandler> errorHandler, ActionCommand... someCommands) {
-		this(aPath, aType, someCommands);
-		this.errorHandler = errorHandler;
 	}
 
 	/**
@@ -138,9 +118,5 @@ public class ActionMapping {
 	 */
 	public Map<String, ActionCommand> getCommands(){
 		return new HashMap<String, ActionCommand>(commands);
-	}
-
-	public Class<? extends ErrorHandler> getErrorHandler() {
-		return errorHandler;
 	}
 }

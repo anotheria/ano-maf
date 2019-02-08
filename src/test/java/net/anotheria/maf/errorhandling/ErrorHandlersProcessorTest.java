@@ -4,7 +4,6 @@ import net.anotheria.maf.action.ActionCommand;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.CommandHandled;
 import net.anotheria.maf.action.NoOperationCommand;
-import net.anotheria.maf.errorhandling.handlers.NullPointerExceptionHandler;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerCommandHandled;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
@@ -41,7 +40,7 @@ public class ErrorHandlersProcessorTest {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNull.class);
 
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof CommandHandled);
 	}
@@ -51,7 +50,7 @@ public class ErrorHandlersProcessorTest {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerActionCommand.class);
 
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertNotNull(command);
 		Assert.assertEquals("ActionCommand", command.getName());
@@ -62,7 +61,7 @@ public class ErrorHandlersProcessorTest {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerCommandHandled.class);
 
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof CommandHandled);
 	}
@@ -73,7 +72,7 @@ public class ErrorHandlersProcessorTest {
 		actionMappings.addErrorHandler(RuntimeException.class, RuntimeExceptionHandlerNoOperationCommand.class);
 
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof NoOperationCommand);
 	}
@@ -83,7 +82,7 @@ public class ErrorHandlersProcessorTest {
 		actionMappings.addErrorHandler(RuntimeException.class, ThrowsExceptionErrorHandler.class);
 
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof NoOperationCommand);
 	}
@@ -97,7 +96,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		processor.enableDebug();
 
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertNotNull(command);
 		Assert.assertEquals("ActionCommand", command.getName());
@@ -116,7 +115,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		processor.enableDebug();
 
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof CommandHandled);
 
@@ -134,7 +133,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		processor.enableDebug();
 
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertNotNull(command);
 		Assert.assertEquals("ActionCommand", command.getName());
@@ -152,7 +151,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		processor.enableDebug();
 
-		final ActionCommand command = processor.process(actionMappings.getErrorHandlers(RuntimeException.class));
+		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
 		Assert.assertTrue(command instanceof CommandHandled);
 
