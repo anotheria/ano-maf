@@ -168,11 +168,12 @@ public class MAFFilter implements Filter, IStatsProducer {
 		}
 
         // Configure by annotations
-        String annotatedClasesPackage = config.getInitParameter("configureByAnnotations");
-        if (!StringUtils.isEmpty(annotatedClasesPackage)) {
-			configureActionsByAnnotations(annotatedClasesPackage);
-			configureActionsErrorHandlersByAnnotations(annotatedClasesPackage);
-			configureGlobalErrorHandlersByAnnotations(annotatedClasesPackage);
+        String annotatedClassesPackage = config.getInitParameter("configureByAnnotations");
+        if (!StringUtils.isEmpty(annotatedClassesPackage)) {
+			final Reflections reflections = new Reflections(annotatedClassesPackage);
+			configureActionsByAnnotations(reflections);
+			configureActionsErrorHandlersByAnnotations(reflections);
+			configureGlobalErrorHandlersByAnnotations(reflections);
         }
 
         // set default error handler
@@ -184,11 +185,9 @@ public class MAFFilter implements Filter, IStatsProducer {
 	/**
 	 * Allows to configure actions via annotations.
 	 *
-	 * @param annotatedClassesPackage the package which contains annotated classes
+	 * @param reflections {@link Reflections} instance with scanned package which contains annotated classes
 	 */
-	private void configureActionsByAnnotations(String annotatedClassesPackage) {
-		Reflections reflections = new Reflections(annotatedClassesPackage);
-
+	private void configureActionsByAnnotations(final Reflections reflections) {
 		Set<Class<?>> actionTypes = new HashSet<Class<?>>();
 		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionAnnotation.class));
 		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionsAnnotation.class));
@@ -227,11 +226,9 @@ public class MAFFilter implements Filter, IStatsProducer {
 	/**
 	 * Allows to configure action error handlers via annotations.
 	 *
-	 * @param annotatedClassesPackage the package which contains annotated classes
+	 * @param reflections {@link Reflections} instance with scanned package which contains annotated classes
 	 */
-	private void configureActionsErrorHandlersByAnnotations(String annotatedClassesPackage) {
-		final Reflections reflections = new Reflections(annotatedClassesPackage);
-
+	private void configureActionsErrorHandlersByAnnotations(final Reflections reflections) {
 		final Set<Class<?>> actionTypes = new HashSet<Class<?>>();
 		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionErrorHandlers.class));
 		actionTypes.addAll(reflections.getTypesAnnotatedWith(ActionErrorHandler.class));
@@ -268,10 +265,9 @@ public class MAFFilter implements Filter, IStatsProducer {
 	/**
 	 * Allows to configure global error handlers via annotations.
 	 *
-	 * @param annotatedClassesPackage the package which contains annotated classes
+	 * @param reflections {@link Reflections} instance with scanned package which contains annotated classes
 	 */
-	private void configureGlobalErrorHandlersByAnnotations(final String annotatedClassesPackage) {
-		final Reflections reflections = new Reflections(annotatedClassesPackage);
+	private void configureGlobalErrorHandlersByAnnotations(final Reflections reflections) {
 		final Set<Class<?>> errorHandlerTypes = new HashSet<>(reflections.getTypesAnnotatedWith(ErrorHandlerAnnotation.class));
 
 		for (Class<?> errorHandlerClazz : errorHandlerTypes) {
