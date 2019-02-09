@@ -1,5 +1,7 @@
 package net.anotheria.maf.errorhandling;
 
+import net.anotheria.maf.action.ActionCommand;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -12,7 +14,7 @@ public final class ErrorHandlerFactory {
 	/**
 	 * {@link ErrorHandler} instances storage.
 	 */
-	private static ConcurrentMap<String, ErrorHandler> instances = new ConcurrentHashMap<>();
+	private static final ConcurrentMap<String, ErrorHandler> instances = new ConcurrentHashMap<>();
 
 	/**
 	 * Allows to create instance of {@link ErrorHandler} subclass by given class type.
@@ -36,5 +38,23 @@ public final class ErrorHandlerFactory {
 		} catch (Exception e) {
 			throw new AssertionError(e);
 		}
+	}
+
+	/**
+	 * Allows to create instance of {@link DefaultErrorHandler} with given action command.
+	 *
+	 * @param actionCommand the {@link ActionCommand} which will be returned by handler
+	 * @return {@link DefaultErrorHandler}
+	 */
+	public DefaultErrorHandler getDefaultErrorHandlerInstance(final ActionCommand actionCommand) {
+		final DefaultErrorHandler handler = (DefaultErrorHandler) instances.get(DefaultErrorHandler.class.getName());
+		if (handler != null) {
+			return handler;
+		}
+
+		final DefaultErrorHandler newHandler = new DefaultErrorHandler(actionCommand);
+		final DefaultErrorHandler existingHandler = (DefaultErrorHandler) instances.putIfAbsent(DefaultErrorHandler.class.getName(), newHandler);
+
+		return existingHandler != null ? existingHandler : newHandler;
 	}
 }

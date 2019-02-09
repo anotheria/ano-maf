@@ -21,6 +21,7 @@ import net.anotheria.maf.annotation.ActionsAnnotation;
 import net.anotheria.maf.annotation.CommandForwardAnnotation;
 import net.anotheria.maf.annotation.CommandRedirectAnnotation;
 import net.anotheria.maf.annotation.ErrorHandlerAnnotation;
+import net.anotheria.maf.bean.ErrorBean;
 import net.anotheria.maf.bean.FormBean;
 import net.anotheria.maf.errorhandling.DefaultErrorHandler;
 import net.anotheria.maf.errorhandling.ErrorHandler;
@@ -342,6 +343,11 @@ public class MAFFilter implements Filter, IStatsProducer {
 			}
 			ActionMapping mapping = mappings.findMapping(actionPath);
 			if (mapping == null){
+				if (mappings.getOnNotFound() != null) {
+					executeCommand(mappings.getOnNotFound(), req, res);
+					return;
+				}
+
 				res.sendError(404, "Action "+actionPath+" not found.");
 				return;
 			}
@@ -420,7 +426,16 @@ public class MAFFilter implements Filter, IStatsProducer {
 
 		// default error handler in case if error wasn't handled above
 		if ((result == null || result instanceof NoOperationCommand)) {
-			result = errorHandlerFactory.getInstance(mappings.getDefaultErrorHandler()).handleError(error, action, mapping, req, res);
+			final ErrorHandler defaultErrorHandler;
+
+			if (mappings.getDefaultErrorHandler() == DefaultErrorHandler.class && mappings.getOnError() != null) {
+				defaultErrorHandler = errorHandlerFactory.getDefaultErrorHandlerInstance(mappings.getOnError());
+			} else {
+				defaultErrorHandler = errorHandlerFactory.getInstance(mappings.getDefaultErrorHandler());
+			}
+
+			req.setAttribute(ErrorBean.NAME, new ErrorBean(error));
+			result = defaultErrorHandler.handleError(error, action, mapping, req, res);
 		}
 
 		return result;

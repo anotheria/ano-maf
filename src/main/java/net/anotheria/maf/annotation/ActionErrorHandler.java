@@ -21,7 +21,7 @@ public @interface ActionErrorHandler {
 	 *
 	 * @return the exception class
 	 */
-	Class<? extends Throwable> exception() default Throwable.class;
+	Class<? extends Throwable> exception();
 
 	/**
 	 * The class of the error handler responsible for {@link #exception()} handling.

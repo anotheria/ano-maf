@@ -15,8 +15,32 @@ import javax.servlet.http.HttpServletResponse;
  * @author Illya Bogatyrchuk
  */
 public class DefaultErrorHandler implements ErrorHandler {
+	/**
+	 * {@link ActionCommand}.
+	 */
+	private ActionCommand actionCommand;
+
+	/**
+	 * Default constructor.
+	 */
+	public DefaultErrorHandler() {
+	}
+
+	/**
+	 * Constructor that allows to specify return action command.
+	 *
+	 * @param actionCommand {@link ActionCommand}
+	 */
+	public DefaultErrorHandler(ActionCommand actionCommand) {
+		this.actionCommand = actionCommand;
+	}
+
 	@Override
 	public ActionCommand handleError(Throwable error, Action action, ActionMapping mapping, HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		throw new ServletException("Error in processing: " + error.getMessage(), error);
+		if (actionCommand == null) {
+			throw new ServletException("Error in processing: " + error.getMessage(), error);
+		}
+
+		return actionCommand;
 	}
 }

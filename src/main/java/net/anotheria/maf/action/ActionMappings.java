@@ -34,6 +34,7 @@ public final class ActionMappings {
 	/**
 	 * Default error handler.
 	 * It will be executed in case if error has not been handled by either the action's error handler or by the global error handlers.
+	 * Original error can be accessed via {@link net.anotheria.maf.bean.ErrorBean#NAME} in the request.
 	 */
 	private Class<? extends ErrorHandler> defaultErrorHandler;
 
@@ -41,6 +42,18 @@ public final class ActionMappings {
 	 * Actions error handlers.
 	 */
 	private final ConcurrentMap<String, ErrorHandlersHolder> actionErrorHandlers = new ConcurrentHashMap<>();
+
+	/**
+	 * This command will be executed if an error happens during the command execution. We recommend to use a CommandForward.
+	 * You can access original error under the name maf.error in the request.
+	 * It will be ignored in case if {@link #defaultErrorHandler} was provided.
+	 */
+	private ActionCommand onError;
+
+	/**
+	 * This command is executed if a not found action has been requested. We recommend to use a CommandRedirect.
+	 */
+	private ActionCommand onNotFound;
 
 	/**
 	 * Adds a mapping.
@@ -207,5 +220,21 @@ public final class ActionMappings {
 		}
 
 		return holder.getHandlers(error);
+	}
+
+	public ActionCommand getOnError() {
+		return onError;
+	}
+
+	public void setOnError(ActionCommand onError) {
+		this.onError = onError;
+	}
+
+	public ActionCommand getOnNotFound() {
+		return onNotFound;
+	}
+
+	public void setOnNotFound(ActionCommand onNotFound) {
+		this.onNotFound = onNotFound;
 	}
 }
