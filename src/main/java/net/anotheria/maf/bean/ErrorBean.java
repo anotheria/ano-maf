@@ -38,7 +38,7 @@ public class ErrorBean {
 		this.stackTrace = stackTrace;
 	}
 
-	public ErrorBean(Exception e){
+	public ErrorBean(Throwable e){
 		message = e.getMessage();
 		stackTrace = Arrays.toString(e.getStackTrace());
 	}

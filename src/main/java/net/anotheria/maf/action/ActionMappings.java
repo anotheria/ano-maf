@@ -1,11 +1,15 @@
- package net.anotheria.maf.action;
+package net.anotheria.maf.action;
 
+import net.anotheria.maf.builtin.ShowMappingsAction;
+import net.anotheria.maf.errorhandling.ErrorHandler;
+import net.anotheria.maf.errorhandling.ErrorHandlersHolder;
+
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import net.anotheria.maf.builtin.ShowMappingsAction;
 
 /**
  * Configuration of the Framework. This class contains all mappings the framework will react on.
@@ -24,7 +28,25 @@ public final class ActionMappings {
 	private final ConcurrentMap<String, ActionMapping> mappings = new ConcurrentHashMap<String, ActionMapping>();
 
 	/**
-	 * This command will be executed if an error happens during the command execution.  We recommend to use a CommandForward. You can access original error under the name maf.error in the request.
+	 * Global error handlers holder.
+	 */
+	private final ErrorHandlersHolder globalErrorHandlersHolder = new ErrorHandlersHolder();
+	/**
+	 * Default error handler.
+	 * It will be executed in case if error has not been handled by either the action's error handler or by the global error handlers.
+	 * Original error can be accessed via {@link net.anotheria.maf.bean.ErrorBean#NAME} in the request.
+	 */
+	private Class<? extends ErrorHandler> defaultErrorHandler;
+
+	/**
+	 * Actions error handlers.
+	 */
+	private final ConcurrentMap<String, ErrorHandlersHolder> actionErrorHandlers = new ConcurrentHashMap<>();
+
+	/**
+	 * This command will be executed if an error happens during the command execution. We recommend to use a CommandForward.
+	 * You can access original error under the name maf.error in the request.
+	 * It will be ignored in case if {@link #defaultErrorHandler} was provided.
 	 */
 	private ActionCommand onError;
 
@@ -32,7 +54,7 @@ public final class ActionMappings {
 	 * This command is executed if a not found action has been requested. We recommend to use a CommandRedirect.
 	 */
 	private ActionCommand onNotFound;
-	
+
 	/**
 	 * Adds a mapping.
 	 * @param path path to which given ActionCommand(s) are mapped.
@@ -45,6 +67,20 @@ public final class ActionMappings {
 
 	/**
 	 * Adds a mapping.
+	 *
+	 * @param path         path to which given ActionCommand(s) are mapped
+	 * @param type         type of ActionMapping created
+	 * @param error        the {@link Throwable} class to handle by error handler
+	 * @param errorHandler the {@link ErrorHandler} class associated with current action
+	 * @param commands     var-arg array of ActionCommands to map to given path
+	 */
+	public void addMapping(String path, String type, Class<? extends Throwable> error, Class<? extends ErrorHandler> errorHandler, ActionCommand... commands) {
+		mappings.put(path, new ActionMapping(path, type, commands));
+		addActionErrorHandler(type, error, errorHandler);
+	}
+
+	/**
+	 * Adds a mapping.
 	 * @param path path to which given ActionForward(s) are mapped.
 	 * @param type type of ActionMapping created.
 	 * @param forwards var-arg array of ActionForwards to map to given path.
@@ -52,7 +88,7 @@ public final class ActionMappings {
 	public void addMapping(String path, String type, ActionForward... forwards){
 		mappings.put(path, new ActionMapping(path, type, forwards));
 	}
-	
+
 	public void addForward(String actionPath, String forwardPath){
 		addMapping(actionPath, ForwardAction.class, new ActionForward("forward", forwardPath));
 	}
@@ -65,6 +101,20 @@ public final class ActionMappings {
 	 */
 	public void addMapping(String path, Class<? extends Action> type, ActionCommand... commands){
 		mappings.put(path, new ActionMapping(path, type.getName(), commands));
+	}
+
+	/**
+	 * Adds a mapping.
+	 *
+	 * @param path         path to which given ActionCommand(s) are mapped
+	 * @param type         type of ActionMapping created
+	 * @param error        the {@link Throwable} class to handle by error handler
+	 * @param errorHandler the {@link ErrorHandler} class associated with current action
+	 * @param commands     var-arg array of ActionCommands to map to given path
+	 */
+	public void addMapping(String path, Class<? extends Action> type, Class<? extends Throwable> error, Class<? extends ErrorHandler> errorHandler, ActionCommand... commands) {
+		mappings.put(path, new ActionMapping(path, type.getName(), commands));
+		addActionErrorHandler(type.getName(), error, errorHandler);
 	}
 
 	/**
@@ -105,11 +155,73 @@ public final class ActionMappings {
 		ret.putAll(mappings);
 		return ret;
 	}
-	
+
+	/**
+	 * Allows to specify the global error handler type for the given error type.
+	 *
+	 * @param error        the class of error
+	 * @param errorHandler the class of error handler
+	 */
+	public void addErrorHandler(final Class<? extends Throwable> error, final Class<? extends ErrorHandler> errorHandler) {
+		this.globalErrorHandlersHolder.addHandler(error, errorHandler);
+	}
+
 	public ActionMappings(){
 		addAlias("maf/showMappings", "/maf/showMappings");
 		addMapping("/maf/showMappings", ShowMappingsAction.class);
 	}
+
+	public void setDefaultErrorHandler(Class<? extends ErrorHandler> defaultErrorHandler) {
+		this.defaultErrorHandler = defaultErrorHandler;
+	}
+
+	public Class<? extends ErrorHandler> getDefaultErrorHandler() {
+		return defaultErrorHandler;
+	}
+
+	/**
+	 * Returns the list of error handler types which can handle the given error type.
+	 *
+	 * @param errorClazz the type of error
+	 * @return the list of error handler types or empty if handlers were not found
+	 */
+	public List<Class<? extends ErrorHandler>> getGlobalErrorHandlers(Class<? extends Throwable> errorClazz) {
+		return this.globalErrorHandlersHolder.getHandlers(errorClazz);
+	}
+
+	/**
+	 * Allows to specify the error handler of the given error for the action.
+	 *
+	 * @param actionType the action type
+	 * @param error      the class of error
+	 * @param handler    the class of error handler
+	 */
+	public synchronized void addActionErrorHandler(final String actionType, final Class<? extends Throwable> error, Class<? extends ErrorHandler> handler) {
+		ErrorHandlersHolder holder = this.actionErrorHandlers.get(actionType);
+		if (holder == null) {
+			holder = new ErrorHandlersHolder();
+		}
+
+		holder.addHandler(error, handler);
+		this.actionErrorHandlers.put(actionType, holder);
+	}
+
+	/**
+	 * Returns the list of error handler types which can handle the given error type for the given action type.
+	 *
+	 * @param actionType the action type
+	 * @param error      the class of error
+	 * @return the list of error handler types
+	 */
+	public List<Class<? extends ErrorHandler>> getActionErrorHandler(final String actionType, final Class<? extends Throwable> error) {
+		final ErrorHandlersHolder holder = this.actionErrorHandlers.get(actionType);
+		if (holder == null) {
+			return Collections.emptyList();
+		}
+
+		return holder.getHandlers(error);
+	}
+
 	public ActionCommand getOnError() {
 		return onError;
 	}
@@ -125,6 +237,4 @@ public final class ActionMappings {
 	public void setOnNotFound(ActionCommand onNotFound) {
 		this.onNotFound = onNotFound;
 	}
-
-
 }

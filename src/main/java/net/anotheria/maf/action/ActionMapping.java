@@ -35,7 +35,7 @@ public class ActionMapping {
 				commands.put(c.getName(), c);
 		
 	}
-	
+
 	/**
 	 * Returns a stored forward for the given forward name.
 	 * @param name name of the forward.
