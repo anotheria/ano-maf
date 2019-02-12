@@ -95,11 +95,9 @@ public class ErrorHandlersProcessor {
 		for (Class<? extends ErrorHandler> handlerClazz : handlersClasses) {
 			final ActionCommand actionCommand = process(handlerClazz);
 
-			if (actionCommand instanceof NoOperationCommand) {
-				continue;
+			if (!(actionCommand instanceof NoOperationCommand)) {
+				return actionCommand;
 			}
-
-			return actionCommand;
 		}
 
 		return new NoOperationCommand();
@@ -108,7 +106,7 @@ public class ErrorHandlersProcessor {
 	/**
 	 * Process single error handler.
 	 * If error handler returns {@code null} it will be considered as {@link CommandHandled}.
-	 * If one of handlers returns something else then a NoOperationCommand the error is considered handled.
+	 * If one of handlers returns something else then a {@link NoOperationCommand} the error is considered handled.
 	 * {@link NoOperationCommand} will be returned too in case if unexpected exception was thrown during handler processing.
 	 *
 	 * @param handlerClazz the {@link ErrorHandler} class to be processed
