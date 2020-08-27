@@ -1,18 +1,16 @@
 package net.anotheria.maf.json;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.anotheria.maf.json.JSONResponse;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Test for JSONResponse class.
@@ -37,9 +35,9 @@ public class JSONResponseTest {
 
 			}
 
-			Assert.assertEquals("status in empty JSONResponse should be \"OK\"", "OK", jsonObject.getString(names.get(0)));
-			Assert.assertEquals("commands in empty JSONResponse should be empty", "{}", jsonObject.getString(names.get(1)));
-			Assert.assertEquals("data in empty JSONResponse should be empty", "{}", jsonObject.getString(names.get(2)));
+			Assert.assertEquals("status in empty JSONResponse should be \"OK\"", "OK", jsonObject.getString("status"));
+			Assert.assertEquals("commands in empty JSONResponse should be empty", 0, jsonObject.getJSONObject("commands").length());
+			Assert.assertEquals("data in empty JSONResponse should be empty", 0, jsonObject.getJSONObject("data").length());
 
 		} catch (JSONException e) {
 			Assert.fail("Unexpected exception");
