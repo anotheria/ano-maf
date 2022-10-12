@@ -10,7 +10,7 @@ import static org.junit.Assert.assertSame;
 
 public class MonitoringActionFactoryTest {
     @Test
-    public void testSingleton() throws ActionFactoryException {
+    public void testActionCreation() throws ActionFactoryException {
         ActionFactory f = new MonitoringActionFactory();
         Action a1 = f.getInstanceOf("net.anotheria.maf.TestAction");
         Action a2 = f.getInstanceOf("net.anotheria.maf.TestAction");
@@ -19,8 +19,7 @@ public class MonitoringActionFactoryTest {
         //also test that we have a new producer
         IProducerRegistryAPI api = new ProducerRegistryAPIFactory().createProducerRegistryAPI();
         assertEquals(1, api.getAllProducersByCategory("action").size());
-        //System.out.println(
-          //  api.getAllProducersByCategory("action"));
+        assertEquals("TestAction-1", api.getAllProducersByCategory("action").get(0).getProducerId());
     }
 
 
