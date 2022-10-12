@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface Action {
 	/**
-	 * Called by the framework prior to call to the execute. Useful for action hierarchies to put common activities (authorisation checks etc) into classes higher in the class hierarchy.
+	 * Called by the framework prior to call to execute. Useful for action hierarchies to put common activities (authorisation checks etc) into classes higher in the class hierarchy.
 	 * @param mapping action mapping
 	 * @param req http request
 	 * @param res http response
@@ -21,7 +21,7 @@ public interface Action {
 	/**
 	 * Called by the framework. This is the method where you implement controller-logic (mvc) in your action.  
 	 * @param mapping action mapping
-	 * @param formBean backing bean
+	 * @param formBean backing bean - deprecated.
 	 * @param req http request
 	 * @param res http response
 	 * @return a forward to another action or jsp for view rendering.
