@@ -80,20 +80,6 @@ public final class ActionMappings {
 	}
 
 	/**
-	 * Adds a mapping.
-	 * @param path path to which given ActionForward(s) are mapped.
-	 * @param type type of ActionMapping created.
-	 * @param forwards var-arg array of ActionForwards to map to given path.
-	 */
-	public void addMapping(String path, String type, ActionForward... forwards){
-		mappings.put(path, new ActionMapping(path, type, forwards));
-	}
-
-	public void addForward(String actionPath, String forwardPath){
-		addMapping(actionPath, ForwardAction.class, new ActionForward("forward", forwardPath));
-	}
-	
-	/**
 	 * Adds an 1.0 style mapping.
 	 * @param path path to which given ActionCommand(s) are mapped.
 	 * @param type type of ActionMapping created.
@@ -115,16 +101,6 @@ public final class ActionMappings {
 	public void addMapping(String path, Class<? extends Action> type, Class<? extends Throwable> error, Class<? extends ErrorHandler> errorHandler, ActionCommand... commands) {
 		mappings.put(path, new ActionMapping(path, type.getName(), commands));
 		addActionErrorHandler(type.getName(), error, errorHandler);
-	}
-
-	/**
-	 * Adds an 1.0 style mapping.
-	 * @param path path to which given ActionForward(s) are mapped.
-	 * @param type type of ActionMapping created.
-	 * @param forwards var-arg array of ActionForwards to map to given path.
-	 */
-	public void addMapping(String path, Class<? extends Action> type, ActionForward... forwards){
-		mappings.put(path, new ActionMapping(path, type.getName(), forwards));
 	}
 
 	/**

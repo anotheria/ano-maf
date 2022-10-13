@@ -325,9 +325,7 @@ public class MAFFilter implements Filter, IStatsProducer {
 			try{
 				action.preProcess(mapping, req, res);
 
-				//formbean is always null for now, we want to remove it in the future.
-
-				command = action.execute(mapping, null, req, res);
+				command = action.execute(mapping, req, res);
 
 				action.postProcess(mapping, req, res);
 			} catch(AbortExecutionException e){
@@ -398,10 +396,6 @@ public class MAFFilter implements Filter, IStatsProducer {
 			return;
 		}
 
-		if (command instanceof ActionForward){
-			ActionForward forward = (ActionForward)command;
-			req.getRequestDispatcher(forward.getPath()).forward(req, res);
-		}
 		if (command instanceof CommandForward){
 			CommandForward forward = (CommandForward)command;
 			req.getRequestDispatcher(forward.getPath()).forward(req, res);

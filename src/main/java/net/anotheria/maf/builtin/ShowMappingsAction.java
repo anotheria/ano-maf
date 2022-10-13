@@ -5,7 +5,6 @@ import net.anotheria.maf.action.AbstractAction;
 import net.anotheria.maf.action.ActionCommand;
 import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.action.ActionMappings;
-import net.anotheria.maf.bean.FormBean;
 import net.anotheria.util.xml.XMLAttribute;
 import net.anotheria.util.xml.XMLNode;
 import net.anotheria.util.xml.XMLTree;
@@ -22,7 +21,7 @@ import java.util.Map;
 public class ShowMappingsAction extends AbstractAction{
 
 	@Override
-	public ActionCommand execute(ActionMapping mapping, FormBean formBean,
+	public ActionCommand execute(ActionMapping mapping,
 			HttpServletRequest req, HttpServletResponse res) throws Exception {
 		
 		res.setContentType("text/xml");
