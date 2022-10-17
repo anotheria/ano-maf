@@ -1,7 +1,5 @@
 package net.anotheria.maf.action;
 
-import net.anotheria.maf.bean.FormBean;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ForwardAction extends AbstractAction{
 	@Override
-	public ActionCommand execute(ActionMapping mapping, FormBean bean, HttpServletRequest req, HttpServletResponse res) {
+	public ActionCommand execute(ActionMapping mapping,  HttpServletRequest req, HttpServletResponse res) {
 		return mapping.findCommand("forward");
 	}
 }

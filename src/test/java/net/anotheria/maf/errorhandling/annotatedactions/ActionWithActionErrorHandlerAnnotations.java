@@ -5,7 +5,6 @@ import net.anotheria.maf.action.ActionCommand;
 import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.annotation.ActionErrorHandler;
 import net.anotheria.maf.annotation.ActionErrorHandlers;
-import net.anotheria.maf.bean.FormBean;
 import net.anotheria.maf.errorhandling.handlers.NullPointerExceptionHandler;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
@@ -28,7 +27,7 @@ public class ActionWithActionErrorHandlerAnnotations implements Action {
 	}
 
 	@Override
-	public ActionCommand execute(ActionMapping mapping, FormBean formBean, HttpServletRequest req, HttpServletResponse res) throws Exception {
+	public ActionCommand execute(ActionMapping mapping, HttpServletRequest req, HttpServletResponse res) throws Exception {
 		throw new RuntimeException();
 	}
 

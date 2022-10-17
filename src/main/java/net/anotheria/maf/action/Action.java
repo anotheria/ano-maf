@@ -1,7 +1,5 @@
 package net.anotheria.maf.action;
 
-import net.anotheria.maf.bean.FormBean;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 /**
@@ -11,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface Action {
 	/**
-	 * Called by the framework prior to call to the execute. Useful for action hierarchies to put common activities (authorisation checks etc) into classes higher in the class hierarchy.
+	 * Called by the framework prior to call to execute. Useful for action hierarchies to put common activities (authorisation checks etc) into classes higher in the class hierarchy.
 	 * @param mapping action mapping
 	 * @param req http request
 	 * @param res http response
@@ -21,13 +19,12 @@ public interface Action {
 	/**
 	 * Called by the framework. This is the method where you implement controller-logic (mvc) in your action.  
 	 * @param mapping action mapping
-	 * @param formBean backing bean
 	 * @param req http request
 	 * @param res http response
 	 * @return a forward to another action or jsp for view rendering.
 	 * @throws Exception any exception
 	 */
-	ActionCommand execute(ActionMapping mapping, FormBean formBean, HttpServletRequest req, HttpServletResponse res) throws Exception;
+	ActionCommand execute(ActionMapping mapping, HttpServletRequest req, HttpServletResponse res) throws Exception;
 	/**
 	 * Called by the framework after call to the execute.
 	 * @param mapping action mapping

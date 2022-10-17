@@ -1,36 +1,12 @@
 package net.anotheria.maf;
 
-import net.anotheria.maf.action.AbortExecutionException;
-import net.anotheria.maf.action.Action;
-import net.anotheria.maf.action.ActionCommand;
-import net.anotheria.maf.action.ActionFactory;
-import net.anotheria.maf.action.ActionFactoryException;
-import net.anotheria.maf.action.ActionForward;
-import net.anotheria.maf.action.ActionMapping;
-import net.anotheria.maf.action.ActionMappings;
-import net.anotheria.maf.action.ActionMappingsConfigurator;
-import net.anotheria.maf.action.CommandForward;
-import net.anotheria.maf.action.CommandHandled;
-import net.anotheria.maf.action.CommandRedirect;
-import net.anotheria.maf.action.DefaultActionFactory;
-import net.anotheria.maf.action.NoOperationCommand;
-import net.anotheria.maf.annotation.ActionAnnotation;
-import net.anotheria.maf.annotation.ActionErrorHandler;
-import net.anotheria.maf.annotation.ActionErrorHandlers;
-import net.anotheria.maf.annotation.ActionsAnnotation;
-import net.anotheria.maf.annotation.CommandForwardAnnotation;
-import net.anotheria.maf.annotation.CommandRedirectAnnotation;
-import net.anotheria.maf.annotation.ErrorHandlerAnnotation;
+import net.anotheria.maf.action.*;
+import net.anotheria.maf.annotation.*;
 import net.anotheria.maf.bean.ErrorBean;
-import net.anotheria.maf.bean.FormBean;
 import net.anotheria.maf.errorhandling.DefaultErrorHandler;
 import net.anotheria.maf.errorhandling.ErrorHandler;
 import net.anotheria.maf.errorhandling.ErrorHandlerFactory;
 import net.anotheria.maf.errorhandling.ErrorHandlersProcessor;
-import net.anotheria.maf.util.FormObjectMapper;
-import net.anotheria.maf.validation.ValidationAware;
-import net.anotheria.maf.validation.ValidationError;
-import net.anotheria.maf.validation.ValidationException;
 import net.anotheria.moskito.core.predefined.Constants;
 import net.anotheria.moskito.core.predefined.FilterStats;
 import net.anotheria.moskito.core.predefined.ServletStats;
@@ -45,20 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * MAFFilter is the dispatcher filter of the MAF. We are using a Filter instead of Servlet to be able to inject MAF parts in huge we-map-everything-through-one-servlet systems (aka spring).
@@ -357,24 +324,10 @@ public class MAFFilter implements Filter, IStatsProducer {
 			ActionCommand command = null;
 			try{
 				action.preProcess(mapping, req, res);
-				FormBean bean = FormObjectMapper.getModelObjectMapped(req, action);
-				if(bean != null){
-					List<ValidationError> errors = FormObjectMapper.validate(req, bean);
-					if(!errors.isEmpty()) {
-						if(action instanceof ValidationAware) {
-							command = ((ValidationAware)action).executeOnValidationError(mapping, bean, errors, req, res);
-						}else{
-							throw new ServletException("Mapper validation failed: "+errors);
-						}
-					}
-				}
-				
-				if (command==null)
-					command = action.execute(mapping, bean, req, res);
+
+				command = action.execute(mapping, req, res);
 
 				action.postProcess(mapping, req, res);
-			} catch(ValidationException e){
-				throw new ServletException("Error in processing: "+e.getMessage(), e);
 			} catch(AbortExecutionException e){
 				//do nothing
 			} catch(Throwable t){
@@ -443,10 +396,6 @@ public class MAFFilter implements Filter, IStatsProducer {
 			return;
 		}
 
-		if (command instanceof ActionForward){
-			ActionForward forward = (ActionForward)command;
-			req.getRequestDispatcher(forward.getPath()).forward(req, res);
-		}
 		if (command instanceof CommandForward){
 			CommandForward forward = (CommandForward)command;
 			req.getRequestDispatcher(forward.getPath()).forward(req, res);

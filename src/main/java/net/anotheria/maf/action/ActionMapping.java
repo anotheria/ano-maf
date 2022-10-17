@@ -37,23 +37,6 @@ public class ActionMapping {
 	}
 
 	/**
-	 * Returns a stored forward for the given forward name.
-	 * @param name name of the forward.
-	 * @return ActionForward if found, null if not found and throws IllegalArgumentException if
-	 * ActionCommand with given name if not an ActionForward.
-	 * @deprecated use findCommand instead.
-	 */
-	public ActionForward findForward(String name){
-		ActionCommand c = findCommand(name);
-		if (c instanceof ActionForward)
-			return (ActionForward)c;
-		if (c!=null)
-			throw new IllegalArgumentException("Command "+name+" is not a forward");
-		return null;
-			
-	}
-
-	/**
 	 * Find ActionCommand with given name bound to this ActionMapping.
 	 * @param name name of the ActionCommand we wan't to find.
 	 * @return found ActionCommand or {@code null} if not found.
