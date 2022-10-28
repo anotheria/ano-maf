@@ -14,7 +14,7 @@ Used by MoSKito among others.
 
 An action as defined by ano-maf is a simple interface:
 
-´´´
+```
 public interface Action {
 	/**
 	 * Called by the framework prior to call to execute. Useful for action hierarchies to put common activities (authorisation checks etc) into classes higher in the class hierarchy.
