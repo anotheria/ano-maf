@@ -1,8 +1,7 @@
 package net.anotheria.maf.mocks;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.HttpSession;
 import java.util.Enumeration;
 
 /**
@@ -43,17 +42,7 @@ public abstract class AbstractHttpSession implements HttpSession {
 	}
 
 	@Override
-	public HttpSessionContext getSessionContext() {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
 	public Object getAttribute(String s) {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
-	public Object getValue(String s) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
@@ -63,27 +52,12 @@ public abstract class AbstractHttpSession implements HttpSession {
 	}
 
 	@Override
-	public String[] getValueNames() {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
 	public void setAttribute(String s, Object o) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
 	@Override
-	public void putValue(String s, Object o) {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
 	public void removeAttribute(String s) {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
-	public void removeValue(String s) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 

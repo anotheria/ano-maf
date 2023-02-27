@@ -9,8 +9,8 @@ import net.anotheria.maf.mocks.MockServletRequestFactory;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 

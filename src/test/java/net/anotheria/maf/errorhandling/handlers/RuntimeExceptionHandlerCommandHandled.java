@@ -6,8 +6,8 @@ import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.action.CommandHandled;
 import net.anotheria.maf.errorhandling.ErrorHandler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * {@link RuntimeException} handler which returns {@link CommandHandled}.

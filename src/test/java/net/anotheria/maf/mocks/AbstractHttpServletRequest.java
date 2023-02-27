@@ -1,20 +1,12 @@
 package net.anotheria.maf.mocks;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
+import jakarta.servlet.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -52,20 +44,8 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 			}
 
 			@Override
-			public void removeValue(String arg0) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
 			public void removeAttribute(String arg0) {
 				sessionMap.remove(arg0);
-
-			}
-
-			@Override
-			public void putValue(String arg0, Object arg1) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -79,24 +59,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 			public void invalidate() {
 				// TODO Auto-generated method stub
 
-			}
-
-			@Override
-			public String[] getValueNames() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public Object getValue(String arg0) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public HttpSessionContext getSessionContext() {
-				// TODO Auto-generated method stub
-				return null;
 			}
 
 			@Override
@@ -304,11 +266,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public String getRealPath(String s) {
-		throw new UnsupportedOperationException("Implement me please!");
-	}
-
-	@Override
 	public String getAuthType() {
 		throw new UnsupportedOperationException("Implement me please!");
 	}
@@ -437,11 +394,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public boolean isRequestedSessionIdFromUrl() {
-		throw new UnsupportedOperationException("Implement me please!");
-	}
-
-	@Override
 	public String changeSessionId() {
 		return null;
 	}
@@ -513,6 +465,21 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public DispatcherType getDispatcherType() {
+		return null;
+	}
+
+	@Override
+	public String getRequestId() {
+		return null;
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		return null;
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
 		return null;
 	}
 }

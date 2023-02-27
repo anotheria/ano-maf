@@ -1,7 +1,7 @@
 package net.anotheria.maf.action;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 /**
  * An action is the base of the MAF. Everything that is mapped to a request path must be an action. Actions are singletons (or at least the framework knows only one instance of them).
  * @author lrosenberg
