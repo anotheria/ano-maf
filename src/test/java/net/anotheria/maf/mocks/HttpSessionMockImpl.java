@@ -1,6 +1,7 @@
 package net.anotheria.maf.mocks;
 
 
+import jakarta.servlet.http.HttpSessionContext;
 import net.anotheria.util.StringUtils;
 
 import java.util.Date;
@@ -68,6 +69,11 @@ public class HttpSessionMockImpl extends AbstractHttpSession {
 	}
 
 	@Override
+	public void removeValue(String s) {
+
+	}
+
+	@Override
 	public Object getAttribute(String attributeName) {
 		if (!StringUtils.isEmpty(attributeName))
 			attributes.get(attributeName);
@@ -75,9 +81,24 @@ public class HttpSessionMockImpl extends AbstractHttpSession {
 	}
 
 	@Override
+	public Object getValue(String s) {
+		return null;
+	}
+
+	@Override
+	public String[] getValueNames() {
+		return new String[0];
+	}
+
+	@Override
 	public void setAttribute(String key, Object value) {
 		if (!StringUtils.isEmpty(key))
 			attributes.put(key, value);
+	}
+
+	@Override
+	public void putValue(String s, Object o) {
+
 	}
 
 	@Override
@@ -88,6 +109,11 @@ public class HttpSessionMockImpl extends AbstractHttpSession {
 	@Override
 	public int getMaxInactiveInterval() {
 		return maxInactiveInterval;
+	}
+
+	@Override
+	public HttpSessionContext getSessionContext() {
+		return null;
 	}
 
 	@Override
