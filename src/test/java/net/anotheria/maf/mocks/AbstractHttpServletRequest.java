@@ -40,18 +40,8 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 			}
 
 			@Override
-			public void putValue(String s, Object o) {
-
-			}
-
-			@Override
 			public void removeAttribute(String arg0) {
 				sessionMap.remove(arg0);
-
-			}
-
-			@Override
-			public void removeValue(String s) {
 
 			}
 
@@ -80,7 +70,7 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 			}
 
 			@Override
-			public HttpSessionContext getSessionContext() {
+			public Object getAttribute(String s) {
 				return null;
 			}
 
@@ -119,21 +109,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 				};
 
 				return enumer;
-			}
-
-			@Override
-			public String[] getValueNames() {
-				return new String[0];
-			}
-
-			@Override
-			public Object getAttribute(String arg0) {
-				return sessionMap.get(arg0);
-			}
-
-			@Override
-			public Object getValue(String s) {
-				return null;
 			}
 		};
 	}
@@ -287,11 +262,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public String getRealPath(String s) {
-		return null;
-	}
-
-	@Override
 	public String getAuthType() {
 		throw new UnsupportedOperationException("Implement me please!");
 	}
@@ -420,11 +390,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public boolean isRequestedSessionIdFromUrl() {
-		return false;
-	}
-
-	@Override
 	public String changeSessionId() {
 		return null;
 	}
@@ -496,6 +461,21 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 
 	@Override
 	public DispatcherType getDispatcherType() {
+		return null;
+	}
+
+	@Override
+	public String getRequestId() {
+		return null;
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		return null;
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
 		return null;
 	}
 }
