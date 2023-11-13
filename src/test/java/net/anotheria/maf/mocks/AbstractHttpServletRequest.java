@@ -7,13 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author: h3llka
@@ -22,6 +16,21 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	private String servletPath;
 	private String pathInfo;
 	private HttpSession session;
+
+	@Override
+	public String getRequestId() {
+		throw new UnsupportedOperationException("Implement me please!");
+	}
+
+	@Override
+	public String getProtocolRequestId() {
+		throw new UnsupportedOperationException("Implement me please!");
+	}
+
+	@Override
+	public ServletConnection getServletConnection() {
+		throw new UnsupportedOperationException("Implement me please!");
+	}
 
 	public AbstractHttpServletRequest() {
 		this.session = new HttpSession() {
@@ -39,19 +48,10 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 				sessionMap.put(arg0, arg1);
 			}
 
-			@Override
-			public void putValue(String s, Object o) {
-
-			}
 
 			@Override
 			public void removeAttribute(String arg0) {
 				sessionMap.remove(arg0);
-
-			}
-
-			@Override
-			public void removeValue(String s) {
 
 			}
 
@@ -79,10 +79,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 				return 0;
 			}
 
-			@Override
-			public HttpSessionContext getSessionContext() {
-				return null;
-			}
 
 			@Override
 			public long getLastAccessedTime() {
@@ -121,19 +117,10 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 				return enumer;
 			}
 
-			@Override
-			public String[] getValueNames() {
-				return new String[0];
-			}
 
 			@Override
 			public Object getAttribute(String arg0) {
 				return sessionMap.get(arg0);
-			}
-
-			@Override
-			public Object getValue(String s) {
-				return null;
 			}
 		};
 	}
@@ -287,11 +274,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	}
 
 	@Override
-	public String getRealPath(String s) {
-		return null;
-	}
-
-	@Override
 	public String getAuthType() {
 		throw new UnsupportedOperationException("Implement me please!");
 	}
@@ -417,11 +399,6 @@ public class AbstractHttpServletRequest implements HttpServletRequest {
 	@Override
 	public boolean isRequestedSessionIdFromURL() {
 		throw new UnsupportedOperationException("Implement me please!");
-	}
-
-	@Override
-	public boolean isRequestedSessionIdFromUrl() {
-		return false;
 	}
 
 	@Override
