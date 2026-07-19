@@ -4,9 +4,9 @@ import net.anotheria.maf.MAFFilter;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.ActionMappingsConfigurator;
 import net.anotheria.maf.errorhandling.handlers.GlobalRuntimeExceptionHandler;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
@@ -24,7 +24,7 @@ public class AnnotationGlobalErrorHandlerTest {
 	 */
 	private ActionMappings filterActionMappings;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		filterActionMappings = null;
 
@@ -74,10 +74,10 @@ public class AnnotationGlobalErrorHandlerTest {
 
 	@Test
 	public void shouldMappingsContainAnnotatedErrorHandler() {
-		Assert.assertNotNull(filterActionMappings);
+		Assertions.assertNotNull(filterActionMappings);
 
 		final List<Class<? extends ErrorHandler>> errorHandlers = filterActionMappings.getGlobalErrorHandlers(RuntimeException.class);
-		Assert.assertEquals(1, errorHandlers.size());
-		Assert.assertSame(GlobalRuntimeExceptionHandler.class, errorHandlers.get(0));
+		Assertions.assertEquals(1, errorHandlers.size());
+		Assertions.assertSame(GlobalRuntimeExceptionHandler.class, errorHandlers.get(0));
 	}
 }

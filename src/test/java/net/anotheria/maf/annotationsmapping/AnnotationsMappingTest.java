@@ -1,10 +1,10 @@
 package net.anotheria.maf.annotationsmapping;
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 import net.anotheria.maf.MAFFilter;
 import net.anotheria.maf.action.ActionMappings;
 import net.anotheria.maf.action.ActionMappingsConfigurator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
@@ -59,7 +59,7 @@ public class AnnotationsMappingTest {
             }
         });
 
-        Assert.assertEquals(1, mappingsContainer.mappings.getMappings().size()); // Default MAF mapping
+        Assertions.assertEquals(1, mappingsContainer.mappings.getMappings().size()); // Default MAF mapping
     }
 
     @Test
@@ -106,10 +106,10 @@ public class AnnotationsMappingTest {
             }
         });
 
-        Assert.assertEquals(4, mappingsContainer.mappings.getMappings().size());
-        Assert.assertEquals(AnnotationsMappingTestActionFirst.class.getName(), mappingsContainer.mappings.findMapping("/firstactionpath").getType());
-        Assert.assertEquals(AnnotationsMappingTestActionSecond.class.getName(), mappingsContainer.mappings.findMapping("/secondactionfirstpath").getType());
-        Assert.assertEquals(AnnotationsMappingTestActionSecond.class.getName(), mappingsContainer.mappings.findMapping("/secondactionsecondpath").getType());
+        Assertions.assertEquals(4, mappingsContainer.mappings.getMappings().size());
+        Assertions.assertEquals(AnnotationsMappingTestActionFirst.class.getName(), mappingsContainer.mappings.findMapping("/firstactionpath").getType());
+        Assertions.assertEquals(AnnotationsMappingTestActionSecond.class.getName(), mappingsContainer.mappings.findMapping("/secondactionfirstpath").getType());
+        Assertions.assertEquals(AnnotationsMappingTestActionSecond.class.getName(), mappingsContainer.mappings.findMapping("/secondactionsecondpath").getType());
     }
 
     @Test
@@ -159,9 +159,9 @@ public class AnnotationsMappingTest {
             }
         });
 
-        Assert.assertEquals(3, mappingsContainer.mappings.getMappings().size());
-        Assert.assertEquals(AnnotationsMappingTestActionThird.class.getName(), mappingsContainer.mappings.findMapping("/thirdactionfirstpath").getType());
-        Assert.assertEquals(AnnotationsMappingTestActionThird.class.getName(), mappingsContainer.mappings.findMapping("/thirdactionsecondpath").getType());
+        Assertions.assertEquals(3, mappingsContainer.mappings.getMappings().size());
+        Assertions.assertEquals(AnnotationsMappingTestActionThird.class.getName(), mappingsContainer.mappings.findMapping("/thirdactionfirstpath").getType());
+        Assertions.assertEquals(AnnotationsMappingTestActionThird.class.getName(), mappingsContainer.mappings.findMapping("/thirdactionsecondpath").getType());
     }
 
     private static class MappingsContainer {

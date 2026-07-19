@@ -1,8 +1,8 @@
 package net.anotheria.maf;
 
 import net.anotheria.maf.action.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletContext;
@@ -10,16 +10,16 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class Mappings10StyleTest {
 	
 	private ActionMappings storedMappings;
 	
-	@Before public void setup() throws Exception{
+	@BeforeEach public void setup() throws Exception{
 		
 		MAFFilter filter = new MAFFilter(){
 			protected List<ActionMappingsConfigurator> getConfigurators(){

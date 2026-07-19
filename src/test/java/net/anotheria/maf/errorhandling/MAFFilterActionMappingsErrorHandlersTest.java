@@ -9,9 +9,9 @@ import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperati
 import net.anotheria.maf.mocks.HttpServletRequestMockImpl;
 import net.anotheria.maf.mocks.MockHttpSessionFactory;
 import net.anotheria.maf.mocks.MockServletRequestFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -38,7 +38,7 @@ public class MAFFilterActionMappingsErrorHandlersTest {
 	 */
 	private MAFFilter filter;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		filter = new MAFFilter() {
 			protected List<ActionMappingsConfigurator> getConfigurators() {
@@ -111,11 +111,11 @@ public class MAFFilterActionMappingsErrorHandlersTest {
 				}
 			});
 		} catch (ServletException e) {
-			Assert.fail();
+			Assertions.fail();
 		}
 	}
 
-	@Test(expected = ServletException.class)
+	@Test
 	public void testAssertionErrorWasNotHandled() throws IOException, ServletException {
 		final HttpServletRequestMockImpl request = MockServletRequestFactory.createMockedRequest(
 				new MockHttpSessionFactory().createMockedSession(),
@@ -129,14 +129,14 @@ public class MAFFilterActionMappingsErrorHandlersTest {
 
 		request.setServletPath("testActionWithAssertionError");
 
-		filter.doFilter(request, null, new FilterChain() {
-			@Override
-			public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
+		Assertions.assertThrows(ServletException.class, () ->
+				filter.doFilter(request, null, new FilterChain() {
+					@Override
+					public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {
 
-			}
-		});
-
-		Assert.fail();
+					}
+				})
+		);
 	}
 
 	@Test
@@ -161,7 +161,7 @@ public class MAFFilterActionMappingsErrorHandlersTest {
 				}
 			});
 		} catch (ServletException e) {
-			Assert.fail();
+			Assertions.fail();
 		}
 	}
 }
