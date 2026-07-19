@@ -1,4 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.anotheria/ano-maf/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.anotheria/ano-maf)
+[![Maven Central](https://img.shields.io/maven-central/v/net.anotheria/ano-maf)](https://central.sonatype.com/artifact/net.anotheria/ano-maf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 
