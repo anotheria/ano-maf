@@ -1,8 +1,8 @@
 package net.anotheria.maf.errorhandling;
 
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNull;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link ErrorHandlerFactory} test.
@@ -17,6 +17,6 @@ public class ErrorHandlerFactoryTest {
 		final RuntimeExceptionHandlerNull instance1 = factory.getInstance(RuntimeExceptionHandlerNull.class);
 		final RuntimeExceptionHandlerNull instance2 = factory.getInstance(RuntimeExceptionHandlerNull.class);
 
-		Assert.assertSame(instance1, instance2);
+		Assertions.assertSame(instance1, instance2);
 	}
 }

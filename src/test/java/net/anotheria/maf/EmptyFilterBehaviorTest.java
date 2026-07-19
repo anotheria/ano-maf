@@ -3,20 +3,20 @@ package net.anotheria.maf;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import net.anotheria.anoprise.mocking.MockFactory;
 import net.anotheria.anoprise.mocking.Mocking;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EmptyFilterBehaviorTest {
 	//tests whether an unconfigured filters answers 404 to each request.
@@ -62,7 +62,7 @@ public class EmptyFilterBehaviorTest {
 		
 		filter.doFilter(req, res, myChain);
 		
-		assertEquals("404 Status code expected", 404, myResponse.statusCode);
+		assertEquals(404, myResponse.statusCode, "404 Status code expected");
 		
 		
 	}

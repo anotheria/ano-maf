@@ -6,11 +6,11 @@ import net.anotheria.maf.action.CommandForward;
 import net.anotheria.maf.mocks.HttpServletRequestMockImpl;
 import net.anotheria.maf.mocks.MockHttpSessionFactory;
 import net.anotheria.maf.mocks.MockServletRequestFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.*;
 
@@ -20,7 +20,7 @@ public class MAFFilterTest {
 
 
     private MAFFilter filter;
-	@Before
+	@BeforeEach
     public void setup() throws Exception{
 
 		filter = new MAFFilter(){

@@ -7,12 +7,12 @@ import net.anotheria.maf.errorhandling.ErrorHandler;
 import net.anotheria.maf.errorhandling.handlers.NullPointerExceptionHandler;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -27,7 +27,7 @@ public class ActionAnnotationsErrorHandlerTest {
 	 */
 	private ActionMappings filterActionMappings;
 
-	@Before
+	@BeforeEach
 	public void setup() throws Exception {
 		filterActionMappings = null;
 
@@ -77,15 +77,15 @@ public class ActionAnnotationsErrorHandlerTest {
 
 	@Test
 	public void shouldMappingsContainActionAnnotatedErrorHandlers() {
-		Assert.assertNotNull(filterActionMappings);
+		Assertions.assertNotNull(filterActionMappings);
 
 		final List<Class<? extends ErrorHandler>> nullPointerHandlers = filterActionMappings.getActionErrorHandler(ActionWithActionErrorHandlerAnnotations.class.getName(), NullPointerException.class);
-		Assert.assertEquals(1, nullPointerHandlers.size());
-		Assert.assertSame(NullPointerExceptionHandler.class, nullPointerHandlers.get(0));
+		Assertions.assertEquals(1, nullPointerHandlers.size());
+		Assertions.assertSame(NullPointerExceptionHandler.class, nullPointerHandlers.get(0));
 
 		final List<Class<? extends ErrorHandler>> runtimeHandlers = filterActionMappings.getActionErrorHandler(ActionWithActionErrorHandlerAnnotations.class.getName(), RuntimeException.class);
-		Assert.assertEquals(2, runtimeHandlers.size());
-		Assert.assertSame(RuntimeExceptionHandlerNoOperationCommand.class, runtimeHandlers.get(0));
-		Assert.assertSame(RuntimeExceptionHandlerActionCommand.class, runtimeHandlers.get(1));
+		Assertions.assertEquals(2, runtimeHandlers.size());
+		Assertions.assertSame(RuntimeExceptionHandlerNoOperationCommand.class, runtimeHandlers.get(0));
+		Assertions.assertSame(RuntimeExceptionHandlerActionCommand.class, runtimeHandlers.get(1));
 	}
 }

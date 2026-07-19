@@ -1,6 +1,6 @@
 package net.anotheria.maf.mocks;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Creates Mocked session implementation.

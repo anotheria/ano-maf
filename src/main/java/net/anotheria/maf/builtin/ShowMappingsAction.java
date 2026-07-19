@@ -9,8 +9,8 @@ import net.anotheria.util.xml.XMLAttribute;
 import net.anotheria.util.xml.XMLNode;
 import net.anotheria.util.xml.XMLTree;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.Map;

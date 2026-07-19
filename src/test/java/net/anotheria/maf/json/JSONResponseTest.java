@@ -3,8 +3,8 @@ package net.anotheria.maf.json;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,16 +31,16 @@ public class JSONResponseTest {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				String name = jsonArray.get(i).toString();
 				if (!names.contains(name))
-					Assert.fail("Name: " + name + " is missed in empty JSONResponse");
+					Assertions.fail("Name: " + name + " is missed in empty JSONResponse");
 
 			}
 
-			Assert.assertEquals("status in empty JSONResponse should be \"OK\"", "OK", jsonObject.getString("status"));
-			Assert.assertEquals("commands in empty JSONResponse should be empty", 0, jsonObject.getJSONObject("commands").length());
-			Assert.assertEquals("data in empty JSONResponse should be empty", 0, jsonObject.getJSONObject("data").length());
+			Assertions.assertEquals("OK", jsonObject.getString("status"), "status in empty JSONResponse should be \"OK\"");
+			Assertions.assertEquals(0, jsonObject.getJSONObject("commands").length(), "commands in empty JSONResponse should be empty");
+			Assertions.assertEquals(0, jsonObject.getJSONObject("data").length(), "data in empty JSONResponse should be empty");
 
 		} catch (JSONException e) {
-			Assert.fail("Unexpected exception");
+			Assertions.fail("Unexpected exception");
 		}
 
 	}
@@ -52,37 +52,37 @@ public class JSONResponseTest {
 		//Test Errors
 		try {
 			response.addError("");
-			Assert.fail("Exception should be thrown");
+			Assertions.fail("Exception should be thrown");
 		} catch (Exception e) {
-			Assert.assertTrue("IllegalArgumentException should be thrown", e instanceof IllegalArgumentException);
+			Assertions.assertTrue(e instanceof IllegalArgumentException, "IllegalArgumentException should be thrown");
 		}
 
 		try {
 			response.addError("error", "");
-			Assert.fail("Exception should be thrown");
+			Assertions.fail("Exception should be thrown");
 		} catch (Exception e) {
-			Assert.assertTrue("IllegalArgumentException should be thrown", e instanceof IllegalArgumentException);
+			Assertions.assertTrue(e instanceof IllegalArgumentException, "IllegalArgumentException should be thrown");
 		}
 
 		try {
 			response.addError("", "error");
-			Assert.fail("Exception should be thrown");
+			Assertions.fail("Exception should be thrown");
 		} catch (Exception e) {
-			Assert.assertTrue("IllegalArgumentException should be thrown", e instanceof IllegalArgumentException);
+			Assertions.assertTrue(e instanceof IllegalArgumentException, "IllegalArgumentException should be thrown");
 		}
 
 		//Test commands
 		try {
 			response.addCommand("", "command");
-			Assert.fail("Exception should be thrown");
+			Assertions.fail("Exception should be thrown");
 		} catch (Exception e) {
-			Assert.assertTrue("IllegalArgumentException should be thrown", e instanceof IllegalArgumentException);
+			Assertions.assertTrue(e instanceof IllegalArgumentException, "IllegalArgumentException should be thrown");
 		}
 		try {
 			response.addCommand("command", "");
-			Assert.fail("Exception should be thrown");
+			Assertions.fail("Exception should be thrown");
 		} catch (Exception e) {
-			Assert.assertTrue("IllegalArgumentException should be thrown", e instanceof IllegalArgumentException);
+			Assertions.assertTrue(e instanceof IllegalArgumentException, "IllegalArgumentException should be thrown");
 		}
 
 
@@ -145,34 +145,34 @@ public class JSONResponseTest {
 			for (int i = 0; i < jsonArray.length(); i++) {
 				String name = jsonArray.get(i).toString();
 				if (!names.contains(name))
-					Assert.fail("Name: " + name + " is missed in empty JSONResponse");
+					Assertions.fail("Name: " + name + " is missed in empty JSONResponse");
 			}
 
 
 			//Test status section
-			Assert.assertEquals("Errors section should contain \"ERROR\" if some errors where added", "ERROR", jsonObject.getString(names.get(0)));
+			Assertions.assertEquals("ERROR", jsonObject.getString(names.get(0)), "Errors section should contain \"ERROR\" if some errors where added");
 
 
 			//Test error section
 			jsonObject = response.toJSON().getJSONObject(names.get(3));
-			Assert.assertEquals("Quantity of names in \"" + names.get(3) + "\" sections wrong", uniqueFieldsNamesQuantity + globalErrorSectionsQuantity, jsonObject.names().length());
+			Assertions.assertEquals(uniqueFieldsNamesQuantity + globalErrorSectionsQuantity, jsonObject.names().length(), "Quantity of names in \"" + names.get(3) + "\" sections wrong");
 
 
 			// Test commands section
 			jsonObject = response.toJSON().getJSONObject(names.get(1));
-			Assert.assertEquals("Quantity of names in \"" + names.get(1) + "\" sections wrong", commands.size(), jsonObject.names().length());
+			Assertions.assertEquals(commands.size(), jsonObject.names().length(), "Quantity of names in \"" + names.get(1) + "\" sections wrong");
 
 
 			//Test data section
 			jsonObject = response.toJSON().getJSONObject(names.get(2));
-			Assert.assertEquals("Quantity of names in \"" + names.get(1) + "\" sections wrong", data.size(), jsonObject.names().length());
+			Assertions.assertEquals(data.size(), jsonObject.names().length(), "Quantity of names in \"" + names.get(1) + "\" sections wrong");
 
 			jsonArray = jsonObject.getJSONArray(data.get(0));
-			Assert.assertEquals("Quantity of elements of array: \""+data.get(0)+"\" in \"" + names.get(1) + "\" sections wrong", 2, jsonArray.length());
+			Assertions.assertEquals(2, jsonArray.length(), "Quantity of elements of array: \""+data.get(0)+"\" in \"" + names.get(1) + "\" sections wrong");
 
 
 		} catch (JSONException e) {
-			Assert.fail("unexpected exception");
+			Assertions.fail("unexpected exception");
 		}
 	}
 

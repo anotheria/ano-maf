@@ -9,8 +9,8 @@ import net.anotheria.maf.errorhandling.handlers.NullPointerExceptionHandler;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerActionCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * {@link Action} implementation with {@link ActionErrorHandler} annotations.

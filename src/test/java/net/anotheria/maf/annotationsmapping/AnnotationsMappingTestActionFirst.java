@@ -6,8 +6,8 @@ import net.anotheria.maf.action.ActionMapping;
 import net.anotheria.maf.annotation.ActionAnnotation;
 import net.anotheria.maf.annotation.CommandForwardAnnotation;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * @author Kirill Reviakin

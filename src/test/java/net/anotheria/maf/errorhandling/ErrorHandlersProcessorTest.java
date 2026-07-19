@@ -9,9 +9,9 @@ import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerCommandHa
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNoOperationCommand;
 import net.anotheria.maf.errorhandling.handlers.RuntimeExceptionHandlerNull;
 import net.anotheria.maf.errorhandling.handlers.ThrowsExceptionErrorHandler;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link ErrorHandlersProcessor} test.
@@ -29,7 +29,7 @@ public class ErrorHandlersProcessorTest {
 	 */
 	private ActionMappings actionMappings;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		factory = new ErrorHandlerFactory();
 		actionMappings = new ActionMappings();
@@ -42,7 +42,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof CommandHandled);
+		Assertions.assertTrue(command instanceof CommandHandled);
 	}
 
 	@Test
@@ -52,8 +52,8 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertNotNull(command);
-		Assert.assertEquals("ActionCommand", command.getName());
+		Assertions.assertNotNull(command);
+		Assertions.assertEquals("ActionCommand", command.getName());
 	}
 
 	@Test
@@ -63,7 +63,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof CommandHandled);
+		Assertions.assertTrue(command instanceof CommandHandled);
 	}
 
 
@@ -74,7 +74,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof NoOperationCommand);
+		Assertions.assertTrue(command instanceof NoOperationCommand);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class ErrorHandlersProcessorTest {
 		final ErrorHandlersProcessor processor = new ErrorHandlersProcessor(factory, new RuntimeException(), null, null, null, null);
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof NoOperationCommand);
+		Assertions.assertTrue(command instanceof NoOperationCommand);
 	}
 
 	@Test
@@ -98,12 +98,12 @@ public class ErrorHandlersProcessorTest {
 
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertNotNull(command);
-		Assert.assertEquals("ActionCommand", command.getName());
+		Assertions.assertNotNull(command);
+		Assertions.assertEquals("ActionCommand", command.getName());
 
-		Assert.assertEquals(2, processor.getExecutedErrorsHandlers().size());
-		Assert.assertEquals(RuntimeExceptionHandlerNoOperationCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
-		Assert.assertEquals(RuntimeExceptionHandlerActionCommand.class.getName(), processor.getExecutedErrorsHandlers().get(1));
+		Assertions.assertEquals(2, processor.getExecutedErrorsHandlers().size());
+		Assertions.assertEquals(RuntimeExceptionHandlerNoOperationCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
+		Assertions.assertEquals(RuntimeExceptionHandlerActionCommand.class.getName(), processor.getExecutedErrorsHandlers().get(1));
 	}
 
 	@Test
@@ -117,11 +117,11 @@ public class ErrorHandlersProcessorTest {
 
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof CommandHandled);
+		Assertions.assertTrue(command instanceof CommandHandled);
 
-		Assert.assertEquals(2, processor.getExecutedErrorsHandlers().size());
-		Assert.assertEquals(RuntimeExceptionHandlerNoOperationCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
-		Assert.assertEquals(RuntimeExceptionHandlerCommandHandled.class.getName(), processor.getExecutedErrorsHandlers().get(1));
+		Assertions.assertEquals(2, processor.getExecutedErrorsHandlers().size());
+		Assertions.assertEquals(RuntimeExceptionHandlerNoOperationCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
+		Assertions.assertEquals(RuntimeExceptionHandlerCommandHandled.class.getName(), processor.getExecutedErrorsHandlers().get(1));
 	}
 
 	@Test
@@ -135,11 +135,11 @@ public class ErrorHandlersProcessorTest {
 
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertNotNull(command);
-		Assert.assertEquals("ActionCommand", command.getName());
+		Assertions.assertNotNull(command);
+		Assertions.assertEquals("ActionCommand", command.getName());
 
-		Assert.assertEquals(1, processor.getExecutedErrorsHandlers().size());
-		Assert.assertEquals(RuntimeExceptionHandlerActionCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
+		Assertions.assertEquals(1, processor.getExecutedErrorsHandlers().size());
+		Assertions.assertEquals(RuntimeExceptionHandlerActionCommand.class.getName(), processor.getExecutedErrorsHandlers().get(0));
 	}
 
 	@Test
@@ -153,9 +153,9 @@ public class ErrorHandlersProcessorTest {
 
 		final ActionCommand command = processor.process(actionMappings.getGlobalErrorHandlers(RuntimeException.class));
 
-		Assert.assertTrue(command instanceof CommandHandled);
+		Assertions.assertTrue(command instanceof CommandHandled);
 
-		Assert.assertEquals(1, processor.getExecutedErrorsHandlers().size());
-		Assert.assertEquals(RuntimeExceptionHandlerCommandHandled.class.getName(), processor.getExecutedErrorsHandlers().get(0));
+		Assertions.assertEquals(1, processor.getExecutedErrorsHandlers().size());
+		Assertions.assertEquals(RuntimeExceptionHandlerCommandHandled.class.getName(), processor.getExecutedErrorsHandlers().get(0));
 	}
 }
